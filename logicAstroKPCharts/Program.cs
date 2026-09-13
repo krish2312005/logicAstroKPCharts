@@ -46,7 +46,7 @@ namespace logicAstroKPCharts
             Application.SetCompatibleTextRenderingDefault(false);
             try
             {
-                Application.Run(new WelcomeForm());
+                Application.Run(new SoftwarePanelForm());
             }
             catch
             { }

@@ -106,6 +106,12 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="SoftwarePanelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SoftwarePanelForm.Designer.cs">
+      <DependentUpon>SoftwarePanelForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ResultsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +127,9 @@
     </Compile>
     <EmbeddedResource Include="AboutUs.resx">
       <DependentUpon>AboutUs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SoftwarePanelForm.resx">
+      <DependentUpon>SoftwarePanelForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
