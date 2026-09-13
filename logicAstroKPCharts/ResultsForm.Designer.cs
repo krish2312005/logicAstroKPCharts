@@ -22,37 +22,34 @@ namespace logicAstroKPCharts
             this.btnPDF = new System.Windows.Forms.Button();
             this.btnFullScreen = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.splitMain = new System.Windows.Forms.SplitContainer();
-            this.splitTopBottom = new System.Windows.Forms.SplitContainer();
-            this.splitChartTables = new System.Windows.Forms.SplitContainer();
+            this.splitAB = new System.Windows.Forms.SplitContainer();
+            this.splitCD = new System.Windows.Forms.SplitContainer();
             this.panelChart = new System.Windows.Forms.Panel();
-            this.splitRightTables = new System.Windows.Forms.SplitContainer();
-            this.lblPlanetHeader = new System.Windows.Forms.Label();
             this.dgvPlanets = new System.Windows.Forms.DataGridView();
-            this.lblCuspHeader = new System.Windows.Forms.Label();
+            this.lblPlanetHeader = new System.Windows.Forms.Label();
+            this.pnlPlanetLegend = new System.Windows.Forms.Panel();
+            this.lblPlanetLegend = new System.Windows.Forms.Label();
+            this.splitEF = new System.Windows.Forms.SplitContainer();
             this.dgvCusps = new System.Windows.Forms.DataGridView();
-            this.lblSigHeader = new System.Windows.Forms.Label();
+            this.lblCuspHeader = new System.Windows.Forms.Label();
             this.dgvSignification = new System.Windows.Forms.DataGridView();
+            this.lblSigHeader = new System.Windows.Forms.Label();
             this.lblLegend = new System.Windows.Forms.Label();
 
             this.pnlTop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
-            this.splitMain.Panel1.SuspendLayout();
-            this.splitMain.Panel2.SuspendLayout();
-            this.splitMain.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitTopBottom)).BeginInit();
-            this.splitTopBottom.Panel1.SuspendLayout();
-            this.splitTopBottom.Panel2.SuspendLayout();
-            this.splitTopBottom.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitChartTables)).BeginInit();
-            this.splitChartTables.Panel1.SuspendLayout();
-            this.splitChartTables.Panel2.SuspendLayout();
-            this.splitChartTables.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitRightTables)).BeginInit();
-            this.splitRightTables.Panel1.SuspendLayout();
-            this.splitRightTables.Panel2.SuspendLayout();
-            this.splitRightTables.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitAB)).BeginInit();
+            this.splitAB.Panel1.SuspendLayout();
+            this.splitAB.Panel2.SuspendLayout();
+            this.splitAB.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitCD)).BeginInit();
+            this.splitCD.Panel1.SuspendLayout();
+            this.splitCD.Panel2.SuspendLayout();
+            this.splitCD.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlanets)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitEF)).BeginInit();
+            this.splitEF.Panel1.SuspendLayout();
+            this.splitEF.Panel2.SuspendLayout();
+            this.splitEF.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCusps)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSignification)).BeginInit();
             this.SuspendLayout();
@@ -67,7 +64,7 @@ namespace logicAstroKPCharts
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(1400, 45);
+            this.pnlTop.Size = new System.Drawing.Size(1600, 45);
             this.pnlTop.TabIndex = 0;
             //
             // lblTitle
@@ -88,7 +85,7 @@ namespace logicAstroKPCharts
             this.btnPDF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPDF.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnPDF.ForeColor = System.Drawing.Color.White;
-            this.btnPDF.Location = new System.Drawing.Point(1120, 8);
+            this.btnPDF.Location = new System.Drawing.Point(1320, 8);
             this.btnPDF.Name = "btnPDF";
             this.btnPDF.Size = new System.Drawing.Size(90, 30);
             this.btnPDF.TabIndex = 1;
@@ -102,7 +99,7 @@ namespace logicAstroKPCharts
             this.btnFullScreen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFullScreen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnFullScreen.ForeColor = System.Drawing.Color.White;
-            this.btnFullScreen.Location = new System.Drawing.Point(1220, 8);
+            this.btnFullScreen.Location = new System.Drawing.Point(1420, 8);
             this.btnFullScreen.Name = "btnFullScreen";
             this.btnFullScreen.Size = new System.Drawing.Size(90, 30);
             this.btnFullScreen.TabIndex = 2;
@@ -116,64 +113,46 @@ namespace logicAstroKPCharts
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(1320, 8);
+            this.btnClose.Location = new System.Drawing.Point(1520, 8);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(70, 30);
             this.btnClose.TabIndex = 3;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = false;
             //
-            // splitMain
+            // splitAB
             //
-            this.splitMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitMain.Location = new System.Drawing.Point(0, 45);
-            this.splitMain.Name = "splitMain";
-            this.splitMain.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.splitAB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitAB.Location = new System.Drawing.Point(0, 45);
+            this.splitAB.Name = "splitAB";
             //
-            // splitMain.Panel1
+            // splitAB.Panel1
             //
-            this.splitMain.Panel1.Controls.Add(this.splitTopBottom);
+            this.splitAB.Panel1.Controls.Add(this.splitCD);
             //
-            // splitMain.Panel2
+            // splitAB.Panel2
             //
-            this.splitMain.Panel2.Controls.Add(this.dgvSignification);
-            this.splitMain.Panel2.Controls.Add(this.lblSigHeader);
-            this.splitMain.Panel2.Controls.Add(this.lblLegend);
-            this.splitMain.Size = new System.Drawing.Size(1400, 755);
-            this.splitMain.SplitterDistance = 480;
+            this.splitAB.Panel2.Controls.Add(this.splitEF);
+            this.splitAB.Size = new System.Drawing.Size(1600, 805);
+            this.splitAB.SplitterDistance = 800;
             //
-            // splitTopBottom
+            // splitCD
             //
-            this.splitTopBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitTopBottom.Location = new System.Drawing.Point(0, 0);
-            this.splitTopBottom.Name = "splitTopBottom";
+            this.splitCD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitCD.Location = new System.Drawing.Point(0, 0);
+            this.splitCD.Name = "splitCD";
             //
-            // splitTopBottom.Panel1
+            // splitCD.Panel1
             //
-            this.splitTopBottom.Panel1.Controls.Add(this.splitChartTables);
+            this.splitCD.Panel1.Controls.Add(this.panelChart);
             //
-            // splitTopBottom.Panel2
+            // splitCD.Panel2
             //
-            this.splitTopBottom.Panel2.Controls.Add(this.splitRightTables);
-            this.splitTopBottom.Size = new System.Drawing.Size(1400, 480);
-            this.splitTopBottom.SplitterDistance = 520;
-            //
-            // splitChartTables
-            //
-            this.splitChartTables.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitChartTables.Location = new System.Drawing.Point(0, 0);
-            this.splitChartTables.Name = "splitChartTables";
-            //
-            // splitChartTables.Panel1
-            //
-            this.splitChartTables.Panel1.Controls.Add(this.panelChart);
-            //
-            // splitChartTables.Panel2
-            //
-            this.splitChartTables.Panel2.Controls.Add(this.dgvPlanets);
-            this.splitChartTables.Panel2.Controls.Add(this.lblPlanetHeader);
-            this.splitChartTables.Size = new System.Drawing.Size(520, 480);
-            this.splitChartTables.SplitterDistance = 320;
+            this.splitCD.Panel2.Controls.Add(this.dgvPlanets);
+            this.splitCD.Panel2.Controls.Add(this.pnlPlanetLegend);
+            this.splitCD.Panel2.Controls.Add(this.lblPlanetHeader);
+            this.splitCD.Size = new System.Drawing.Size(800, 805);
+            this.splitCD.SplitterDistance = 250;
             //
             // panelChart
             //
@@ -181,21 +160,43 @@ namespace logicAstroKPCharts
             this.panelChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelChart.Location = new System.Drawing.Point(0, 0);
             this.panelChart.Name = "panelChart";
-            this.panelChart.Size = new System.Drawing.Size(320, 480);
+            this.panelChart.Size = new System.Drawing.Size(250, 805);
             this.panelChart.TabIndex = 0;
             //
             // lblPlanetHeader
             //
             this.lblPlanetHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(140)))), ((int)(((byte)(8)))));
             this.lblPlanetHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblPlanetHeader.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblPlanetHeader.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.lblPlanetHeader.ForeColor = System.Drawing.Color.White;
             this.lblPlanetHeader.Location = new System.Drawing.Point(0, 0);
             this.lblPlanetHeader.Name = "lblPlanetHeader";
-            this.lblPlanetHeader.Size = new System.Drawing.Size(200, 25);
+            this.lblPlanetHeader.Size = new System.Drawing.Size(550, 28);
             this.lblPlanetHeader.TabIndex = 0;
             this.lblPlanetHeader.Text = "Planet Positions";
             this.lblPlanetHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            // pnlPlanetLegend
+            //
+            this.pnlPlanetLegend.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(230)))));
+            this.pnlPlanetLegend.Controls.Add(this.lblPlanetLegend);
+            this.pnlPlanetLegend.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlPlanetLegend.Location = new System.Drawing.Point(0, 755);
+            this.pnlPlanetLegend.Name = "pnlPlanetLegend";
+            this.pnlPlanetLegend.Size = new System.Drawing.Size(550, 50);
+            this.pnlPlanetLegend.TabIndex = 2;
+            //
+            // lblPlanetLegend
+            //
+            this.lblPlanetLegend.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblPlanetLegend.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
+            this.lblPlanetLegend.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.lblPlanetLegend.Location = new System.Drawing.Point(0, 0);
+            this.lblPlanetLegend.Name = "lblPlanetLegend";
+            this.lblPlanetLegend.Size = new System.Drawing.Size(550, 50);
+            this.lblPlanetLegend.TabIndex = 0;
+            this.lblPlanetLegend.Text = "";
+            this.lblPlanetLegend.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
             // dgvPlanets
             //
@@ -205,47 +206,50 @@ namespace logicAstroKPCharts
             this.dgvPlanets.BackgroundColor = System.Drawing.Color.White;
             this.dgvPlanets.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPlanets.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(230)))), ((int)(((byte)(99)))));
-            this.dgvPlanets.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.dgvPlanets.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.dgvPlanets.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.Black;
             this.dgvPlanets.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dgvPlanets.ColumnHeadersHeight = 28;
+            this.dgvPlanets.ColumnHeadersHeight = 30;
             this.dgvPlanets.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvPlanets.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvPlanets.EnableHeadersVisualStyles = false;
-            this.dgvPlanets.Location = new System.Drawing.Point(0, 25);
+            this.dgvPlanets.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.dgvPlanets.Location = new System.Drawing.Point(0, 28);
             this.dgvPlanets.Name = "dgvPlanets";
             this.dgvPlanets.ReadOnly = true;
             this.dgvPlanets.RowHeadersVisible = false;
-            this.dgvPlanets.RowTemplate.Height = 22;
-            this.dgvPlanets.Size = new System.Drawing.Size(200, 455);
+            this.dgvPlanets.RowTemplate.Height = 26;
+            this.dgvPlanets.Size = new System.Drawing.Size(550, 727);
             this.dgvPlanets.TabIndex = 1;
             //
-            // splitRightTables
+            // splitEF
             //
-            this.splitRightTables.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitRightTables.Location = new System.Drawing.Point(0, 0);
-            this.splitRightTables.Name = "splitRightTables";
+            this.splitEF.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitEF.Location = new System.Drawing.Point(0, 0);
+            this.splitEF.Name = "splitEF";
             //
-            // splitRightTables.Panel1
+            // splitEF.Panel1
             //
-            this.splitRightTables.Panel1.Controls.Add(this.dgvCusps);
-            this.splitRightTables.Panel1.Controls.Add(this.lblCuspHeader);
+            this.splitEF.Panel1.Controls.Add(this.dgvCusps);
+            this.splitEF.Panel1.Controls.Add(this.lblCuspHeader);
             //
-            // splitRightTables.Panel2
+            // splitEF.Panel2
             //
-            this.splitRightTables.Panel2.Controls.Add(this.dgvSignification);
-            this.splitRightTables.Size = new System.Drawing.Size(880, 480);
-            this.splitRightTables.SplitterDistance = 180;
+            this.splitEF.Panel2.Controls.Add(this.dgvSignification);
+            this.splitEF.Panel2.Controls.Add(this.lblSigHeader);
+            this.splitEF.Panel2.Controls.Add(this.lblLegend);
+            this.splitEF.Size = new System.Drawing.Size(800, 805);
+            this.splitEF.SplitterDistance = 400;
             //
             // lblCuspHeader
             //
             this.lblCuspHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(140)))), ((int)(((byte)(8)))));
             this.lblCuspHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblCuspHeader.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblCuspHeader.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.lblCuspHeader.ForeColor = System.Drawing.Color.White;
             this.lblCuspHeader.Location = new System.Drawing.Point(0, 0);
             this.lblCuspHeader.Name = "lblCuspHeader";
-            this.lblCuspHeader.Size = new System.Drawing.Size(880, 25);
+            this.lblCuspHeader.Size = new System.Drawing.Size(400, 28);
             this.lblCuspHeader.TabIndex = 0;
             this.lblCuspHeader.Text = "Cuspal House Positions";
             this.lblCuspHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -258,30 +262,31 @@ namespace logicAstroKPCharts
             this.dgvCusps.BackgroundColor = System.Drawing.Color.White;
             this.dgvCusps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvCusps.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(230)))), ((int)(((byte)(99)))));
-            this.dgvCusps.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.dgvCusps.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.dgvCusps.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.Black;
             this.dgvCusps.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dgvCusps.ColumnHeadersHeight = 28;
+            this.dgvCusps.ColumnHeadersHeight = 30;
             this.dgvCusps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvCusps.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvCusps.EnableHeadersVisualStyles = false;
-            this.dgvCusps.Location = new System.Drawing.Point(0, 25);
+            this.dgvCusps.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.dgvCusps.Location = new System.Drawing.Point(0, 28);
             this.dgvCusps.Name = "dgvCusps";
             this.dgvCusps.ReadOnly = true;
             this.dgvCusps.RowHeadersVisible = false;
-            this.dgvCusps.RowTemplate.Height = 22;
-            this.dgvCusps.Size = new System.Drawing.Size(880, 155);
+            this.dgvCusps.RowTemplate.Height = 26;
+            this.dgvCusps.Size = new System.Drawing.Size(400, 777);
             this.dgvCusps.TabIndex = 1;
             //
             // lblSigHeader
             //
             this.lblSigHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(140)))), ((int)(((byte)(8)))));
             this.lblSigHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblSigHeader.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblSigHeader.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.lblSigHeader.ForeColor = System.Drawing.Color.White;
             this.lblSigHeader.Location = new System.Drawing.Point(0, 0);
             this.lblSigHeader.Name = "lblSigHeader";
-            this.lblSigHeader.Size = new System.Drawing.Size(1400, 25);
+            this.lblSigHeader.Size = new System.Drawing.Size(396, 28);
             this.lblSigHeader.TabIndex = 0;
             this.lblSigHeader.Text = "House Signification";
             this.lblSigHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -294,19 +299,20 @@ namespace logicAstroKPCharts
             this.dgvSignification.BackgroundColor = System.Drawing.Color.White;
             this.dgvSignification.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvSignification.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(230)))), ((int)(((byte)(99)))));
-            this.dgvSignification.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.dgvSignification.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.dgvSignification.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.Black;
             this.dgvSignification.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dgvSignification.ColumnHeadersHeight = 28;
+            this.dgvSignification.ColumnHeadersHeight = 30;
             this.dgvSignification.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvSignification.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvSignification.EnableHeadersVisualStyles = false;
-            this.dgvSignification.Location = new System.Drawing.Point(0, 0);
+            this.dgvSignification.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.dgvSignification.Location = new System.Drawing.Point(0, 28);
             this.dgvSignification.Name = "dgvSignification";
             this.dgvSignification.ReadOnly = true;
             this.dgvSignification.RowHeadersVisible = false;
-            this.dgvSignification.RowTemplate.Height = 22;
-            this.dgvSignification.Size = new System.Drawing.Size(1400, 225);
+            this.dgvSignification.RowTemplate.Height = 26;
+            this.dgvSignification.Size = new System.Drawing.Size(396, 752);
             this.dgvSignification.TabIndex = 1;
             //
             // lblLegend
@@ -315,11 +321,11 @@ namespace logicAstroKPCharts
             this.lblLegend.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lblLegend.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblLegend.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.lblLegend.Location = new System.Drawing.Point(0, 250);
+            this.lblLegend.Location = new System.Drawing.Point(0, 780);
             this.lblLegend.Name = "lblLegend";
-            this.lblLegend.Size = new System.Drawing.Size(1400, 25);
+            this.lblLegend.Size = new System.Drawing.Size(396, 25);
             this.lblLegend.TabIndex = 2;
-            this.lblLegend.Text = "# Planet in self star    * No planets in its stars    R Retrograde    Blue = Ownership Bhava    Red = Deposited Bhava";
+            this.lblLegend.Text = "# Self star  * No planets  R Retrograde  Blue=Owner  Red=Deposited";
             this.lblLegend.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
             // ResultsForm
@@ -327,11 +333,11 @@ namespace logicAstroKPCharts
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(1400, 800);
-            this.Controls.Add(this.splitMain);
+            this.ClientSize = new System.Drawing.Size(1600, 850);
+            this.Controls.Add(this.splitAB);
             this.Controls.Add(this.pnlTop);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(1000, 600);
+            this.MinimumSize = new System.Drawing.Size(1200, 600);
             this.Name = "ResultsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "KP Astrology Results";
@@ -339,22 +345,19 @@ namespace logicAstroKPCharts
 
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
-            this.splitMain.Panel1.ResumeLayout(false);
-            this.splitMain.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitMain)).EndInit();
-            this.splitMain.ResumeLayout(false);
-            this.splitTopBottom.Panel1.ResumeLayout(false);
-            this.splitTopBottom.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitTopBottom)).EndInit();
-            this.splitTopBottom.ResumeLayout(false);
-            this.splitChartTables.Panel1.ResumeLayout(false);
-            this.splitChartTables.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitChartTables)).EndInit();
-            this.splitChartTables.ResumeLayout(false);
-            this.splitRightTables.Panel1.ResumeLayout(false);
-            this.splitRightTables.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitRightTables)).EndInit();
-            this.splitRightTables.ResumeLayout(false);
+            this.splitAB.Panel1.ResumeLayout(false);
+            this.splitAB.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitAB)).EndInit();
+            this.splitAB.ResumeLayout(false);
+            this.splitCD.Panel1.ResumeLayout(false);
+            this.splitCD.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitCD)).EndInit();
+            this.splitCD.ResumeLayout(false);
+            this.pnlPlanetLegend.ResumeLayout(false);
+            this.splitEF.Panel1.ResumeLayout(false);
+            this.splitEF.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitEF)).EndInit();
+            this.splitEF.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlanets)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCusps)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSignification)).EndInit();
@@ -368,10 +371,9 @@ namespace logicAstroKPCharts
         private System.Windows.Forms.Button btnPDF;
         private System.Windows.Forms.Button btnFullScreen;
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.SplitContainer splitMain;
-        private System.Windows.Forms.SplitContainer splitTopBottom;
-        private System.Windows.Forms.SplitContainer splitChartTables;
-        private System.Windows.Forms.SplitContainer splitRightTables;
+        private System.Windows.Forms.SplitContainer splitAB;
+        private System.Windows.Forms.SplitContainer splitCD;
+        private System.Windows.Forms.SplitContainer splitEF;
         private System.Windows.Forms.Panel panelChart;
         private System.Windows.Forms.DataGridView dgvPlanets;
         private System.Windows.Forms.DataGridView dgvCusps;
@@ -380,5 +382,7 @@ namespace logicAstroKPCharts
         private System.Windows.Forms.Label lblCuspHeader;
         private System.Windows.Forms.Label lblSigHeader;
         private System.Windows.Forms.Label lblLegend;
+        private System.Windows.Forms.Panel pnlPlanetLegend;
+        private System.Windows.Forms.Label lblPlanetLegend;
     }
 }

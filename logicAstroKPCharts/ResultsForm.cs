@@ -92,6 +92,7 @@ namespace logicAstroKPCharts
             SetupPlanetTable();
             SetupCuspTable();
             SetupSignificationTable();
+            SetupPlanetLegend();
         }
 
         private void DrawRasiChart()
@@ -105,8 +106,6 @@ namespace logicAstroKPCharts
                 "Viruchikam", "Dhanusu", "Makaram", "Kumbam"
             };
 
-            int[] rasiIndex = { 11, 0, 1, 2, 10, -1, -1, 3, 9, -1, -1, 4, 8, 7, 6, 5 };
-
             TableLayoutPanel tlp = new TableLayoutPanel();
             tlp.Dock = DockStyle.Fill;
             tlp.ColumnCount = 4;
@@ -119,97 +118,98 @@ namespace logicAstroKPCharts
             for (int r = 0; r < 4; r++)
                 tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
 
-            for (int i = 0; i < 16; i++)
+            tlp.Padding = new Padding(0);
+            tlp.Margin = new Padding(0);
+
+            int[,] cellMap = {
+                { 11, 0, 1, 2 },
+                { 10, -1, -1, 3 },
+                { 9, -1, -1, 4 },
+                { 8, 7, 6, 5 }
+            };
+
+            for (int row = 0; row < 4; row++)
             {
-                Panel cellPanel = new Panel();
-                cellPanel.Dock = DockStyle.Fill;
-                cellPanel.Margin = new Padding(1);
-                cellPanel.BorderStyle = BorderStyle.FixedSingle;
-
-                int idx = rasiIndex[i];
-
-                if (idx == -1)
+                for (int col = 0; col < 4; col++)
                 {
-                    cellPanel.BackColor = Color.FromArgb(255, 255, 245);
+                    int idx = cellMap[row, col];
 
-                    if (i == 5)
+                    if (idx == -1)
                     {
-                        DrawInfoUpper(cellPanel);
-                    }
-                    else if (i == 6)
-                    {
-                        DrawInfoLower(cellPanel);
-                    }
-                    else if (i == 9)
-                    {
-                        DrawCoordsUpper(cellPanel);
-                    }
-                    else if (i == 10)
-                    {
-                        DrawCoordsLower(cellPanel);
-                    }
-
-                    tlp.Controls.Add(cellPanel);
-                    continue;
-                }
-
-                cellPanel.BackColor = Color.White;
-
-                Label signLabel = new Label();
-                signLabel.Text = signNames[idx];
-                signLabel.Dock = DockStyle.Top;
-                signLabel.Height = 18;
-                signLabel.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
-                signLabel.ForeColor = Color.FromArgb(100, 100, 100);
-                signLabel.TextAlign = ContentAlignment.MiddleCenter;
-                signLabel.BackColor = Color.FromArgb(240, 248, 255);
-                cellPanel.Controls.Add(signLabel);
-
-                string rasiData = m_chartData.RasiDataArray[idx];
-                if (!string.IsNullOrEmpty(rasiData))
-                {
-                    string[] entries = rasiData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    float yPos = 20;
-
-                    foreach (string entry in entries)
-                    {
-                        string[] parts = entry.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts.Length == 2)
+                        if (row == 1 && col == 1)
                         {
-                            string planetName = parts[0].Trim();
-                            string position = parts[1].Trim();
+                            Panel mergedPanel = new Panel();
+                            mergedPanel.Dock = DockStyle.Fill;
+                            mergedPanel.Margin = new Padding(1);
+                            mergedPanel.BorderStyle = BorderStyle.FixedSingle;
+                            mergedPanel.BackColor = Color.FromArgb(255, 255, 245);
+                            DrawMergedInfo(mergedPanel);
+                            tlp.Controls.Add(mergedPanel, 1, 1);
+                            tlp.SetColumnSpan(mergedPanel, 2);
+                            tlp.SetRowSpan(mergedPanel, 2);
+                        }
+                        continue;
+                    }
 
-                            bool isCusp = planetName.StartsWith("~");
-                            bool isRetro = planetName.Contains("R");
-                            bool isOwnStar = planetName.Contains("#");
+                    Panel cellPanel = new Panel();
+                    cellPanel.Dock = DockStyle.Fill;
+                    cellPanel.Margin = new Padding(1);
+                    cellPanel.BorderStyle = BorderStyle.FixedSingle;
+                    cellPanel.BackColor = Color.White;
 
-                            if (isCusp)
-                                planetName = planetName.Substring(1);
+                    Label signLabel = new Label();
+                    signLabel.Text = signNames[idx];
+                    signLabel.Dock = DockStyle.Top;
+                    signLabel.Height = 18;
+                    signLabel.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+                    signLabel.ForeColor = Color.FromArgb(100, 100, 100);
+                    signLabel.TextAlign = ContentAlignment.MiddleCenter;
+                    signLabel.BackColor = Color.FromArgb(240, 248, 255);
+                    cellPanel.Controls.Add(signLabel);
 
-                            Label planetLabel = new Label();
-                            planetLabel.AutoSize = true;
-                            planetLabel.Location = new Point(4, (int)yPos);
-                            planetLabel.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
-                            planetLabel.BackColor = Color.Transparent;
-                            planetLabel.ForeColor = isCusp ? Color.FromArgb(204, 0, 0) : Color.FromArgb(0, 0, 204);
-                            planetLabel.Text = planetName;
-                            cellPanel.Controls.Add(planetLabel);
+                    string rasiData = m_chartData.RasiDataArray[idx];
+                    if (!string.IsNullOrEmpty(rasiData))
+                    {
+                        string[] entries = rasiData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                        float yPos = 20;
 
-                            Label posLabel = new Label();
-                            posLabel.AutoSize = true;
-                            posLabel.Location = new Point(34, (int)yPos);
-                            posLabel.Font = new Font("Segoe UI", 8F);
-                            posLabel.ForeColor = Color.Black;
-                            posLabel.BackColor = Color.Transparent;
-                            posLabel.Text = position;
-                            cellPanel.Controls.Add(posLabel);
+                        foreach (string entry in entries)
+                        {
+                            string[] parts = entry.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length == 2)
+                            {
+                                string planetName = parts[0].Trim();
+                                string position = parts[1].Trim();
+                                bool isCusp = planetName.StartsWith("~");
 
-                            yPos += 16;
+                                if (isCusp)
+                                    planetName = planetName.Substring(1);
+
+                                Label planetLabel = new Label();
+                                planetLabel.AutoSize = true;
+                                planetLabel.Location = new Point(4, (int)yPos);
+                                planetLabel.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+                                planetLabel.BackColor = Color.Transparent;
+                                planetLabel.ForeColor = isCusp ? Color.FromArgb(204, 0, 0) : Color.FromArgb(0, 0, 204);
+                                planetLabel.Text = planetName;
+                                cellPanel.Controls.Add(planetLabel);
+
+                                Label posLabel = new Label();
+                                posLabel.AutoSize = true;
+                                posLabel.Location = new Point(34, (int)yPos);
+                                posLabel.Font = new Font("Segoe UI", 8F);
+                                posLabel.ForeColor = Color.Black;
+                                posLabel.BackColor = Color.Transparent;
+                                posLabel.Text = position;
+                                cellPanel.Controls.Add(posLabel);
+
+                                yPos += 16;
+                            }
                         }
                     }
-                }
 
-                tlp.Controls.Add(cellPanel);
+                    tlp.Controls.Add(cellPanel, col, row);
+                }
             }
 
             panelChart.Controls.Add(tlp);
@@ -217,60 +217,48 @@ namespace logicAstroKPCharts
             panelChart.ResumeLayout(false);
         }
 
-        private void DrawInfoUpper(Panel p)
+        private void DrawMergedInfo(Panel p)
         {
-            float y = 3;
+            float y = 5;
+            float leftCol = 5;
+            float rightCol = p.Width / 2 + 5;
             Label lbl;
 
-            lbl = MakeInfoLabel(m_chartData.Name + ", " + m_chartData.Sex, 7F, FontStyle.Bold, Color.FromArgb(0, 0, 153));
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
+            lbl = MakeInfoLabel(m_chartData.Name + ", " + m_chartData.Sex, 8F, FontStyle.Bold, Color.FromArgb(0, 0, 153));
+            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y += 17;
 
-            lbl = MakeInfoLabel("DOB: " + m_chartData.DateTimeOfBirth, 7F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
+            lbl = MakeInfoLabel("DOB: " + m_chartData.DateTimeOfBirth, 7.5F, FontStyle.Regular, Color.Black);
+            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y += 16;
 
-            lbl = MakeInfoLabel("Place: " + m_chartData.PlaceOfBirth, 7F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
+            lbl = MakeInfoLabel("Place: " + m_chartData.PlaceOfBirth, 7.5F, FontStyle.Regular, Color.Black);
+            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y += 16;
 
-            lbl = MakeInfoLabel("Star: " + m_chartData.MoonStarInfo, 7F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
+            lbl = MakeInfoLabel("Star: " + m_chartData.MoonStarInfo, 7.5F, FontStyle.Regular, Color.Black);
+            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y += 16;
 
-            lbl = MakeInfoLabel("Dasa: " + m_chartData.DasaBalance, 7F, FontStyle.Bold, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl);
-        }
+            lbl = MakeInfoLabel("Dasa: " + m_chartData.DasaBalance, 7.5F, FontStyle.Bold, Color.Black);
+            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y += 18;
 
-        private void DrawInfoLower(Panel p)
-        {
-            p.BackColor = Color.FromArgb(255, 255, 245);
-        }
+            float y2 = 5;
+            lbl = MakeInfoLabel("Long: " + m_chartData.Longitude, 7.5F, FontStyle.Regular, Color.Black);
+            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y2 += 16;
 
-        private void DrawCoordsUpper(Panel p)
-        {
-            float y = 3;
-            Label lbl;
+            lbl = MakeInfoLabel("Lat: " + m_chartData.Latitude, 7.5F, FontStyle.Regular, Color.Black);
+            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y2 += 18;
 
-            lbl = MakeInfoLabel("Long: " + m_chartData.Longitude, 7F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
+            lbl = MakeInfoLabel("Ayanamsa: " + m_chartData.Ayanamsa, 7F, FontStyle.Regular, Color.Black);
+            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
+            y2 += 16;
 
-            lbl = MakeInfoLabel("Lat: " + m_chartData.Latitude, 7F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl);
-        }
-
-        private void DrawCoordsLower(Panel p)
-        {
-            float y = 3;
-            Label lbl;
-
-            lbl = MakeInfoLabel("Ayanamsa:", 7F, FontStyle.Bold, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
-
-            lbl = MakeInfoLabel(m_chartData.Ayanamsa, 6.5F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
-
-            lbl = MakeInfoLabel("Sidereal:", 7F, FontStyle.Bold, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl); y += 15;
-
-            lbl = MakeInfoLabel(m_chartData.SiderealTime, 6.5F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point(4, (int)y); p.Controls.Add(lbl);
+            lbl = MakeInfoLabel("Sidereal: " + m_chartData.SiderealTime, 7F, FontStyle.Regular, Color.Black);
+            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
         }
 
         private Label MakeInfoLabel(string text, float fontSize, FontStyle style, Color foreColor)
@@ -282,6 +270,14 @@ namespace logicAstroKPCharts
             lbl.ForeColor = foreColor;
             lbl.BackColor = Color.Transparent;
             return lbl;
+        }
+
+        private void DisableSorting(DataGridView dgv)
+        {
+            foreach (DataGridViewColumn col in dgv.Columns)
+            {
+                col.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
         }
 
         private void SetupPlanetTable()
@@ -322,6 +318,8 @@ namespace logicAstroKPCharts
                 row.Cells[0].Style.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
                 row.Cells[3].Style.BackColor = Color.FromArgb(240, 233, 216);
             }
+
+            DisableSorting(dgvPlanets);
         }
 
         private void SetupCuspTable()
@@ -365,6 +363,8 @@ namespace logicAstroKPCharts
                 }
                 row.Cells[3].Style.BackColor = Color.FromArgb(240, 233, 216);
             }
+
+            DisableSorting(dgvCusps);
         }
 
         private void SetupSignificationTable()
@@ -408,6 +408,16 @@ namespace logicAstroKPCharts
                 row.Cells[4].Style.Font = new Font("Segoe UI", 8.5F);
                 row.Cells[4].Style.ForeColor = Color.Black;
             }
+
+            DisableSorting(dgvSignification);
+        }
+
+        private void SetupPlanetLegend()
+        {
+            lblPlanetLegend.Text = "# = Planet in its own star\n* = No planets in its star(s)\nR = Retrograde\nBlue = Planet  Red = Cusp";
+            lblPlanetLegend.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            lblPlanetLegend.ForeColor = Color.FromArgb(80, 80, 80);
+            lblPlanetLegend.TextAlign = ContentAlignment.MiddleCenter;
         }
 
         private string ConvertToRomanLetters(string strHouseNo)
