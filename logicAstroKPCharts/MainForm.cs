@@ -771,22 +771,166 @@ namespace logicAstroKPCharts
 
                 string strAstroData = string.Format("{0}|{1}|{2}-{3}-{4} {5}.{6}.{7}|{8}{9:00}.{10:00}|{11}|{12} {13:000}.{14:00}|{15} {16:00}.{17:00}|Standard Time|0\n", m_strObjectName, m_strGender, m_nYear, m_nMonth, m_nDay, m_nHours, m_nMinutes, m_nSeconds, strTimeZoneSign, timeZoneDiff.Hours, timeZoneDiff.Minutes, strLocationOfBirth, m_strLonDirection, m_nLonDegrees, m_nLonMinutes, m_strLatDirection, m_nLatDegrees, m_nLatMinutes);
 
-                string strPDFFile = string.Format(@"{0}\{1}.pdf", m_strPDFStorePath, m_strObjectName);
-
-                if (BuildAstroCharts(strAstroData, strPDFFile, ref strErrorMessage) == false)
+                AstroChartData chartData = null;
+                if (CalculateChartDataFromInput(strAstroData, out chartData, ref strErrorMessage) == false)
                 {
                     MessageBox.Show(strErrorMessage, "Generate() - Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                else
-                {
-                    // open the pdf file
-                    System.Diagnostics.Process.Start(strPDFFile);
-                }
+
+                ResultsForm resultsForm = new ResultsForm(chartData);
+                resultsForm.OnPDFRequested += ResultsForm_OnPDFRequested;
+                resultsForm.ShowDialog();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Generate() - Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ResultsForm_OnPDFRequested(object sender, EventArgs e)
+        {
+            string strErrorMessage = "";
+            try
+            {
+                if (ValidateData() == false)
+                {
+                    return;
+                }
+
+                string strTimeZoneSign = "";
+                int nTimeZoneMinutes = m_nTimeZoneMinutes;
+                if (m_nTimeZoneMinutes < 0)
+                {
+                    strTimeZoneSign = "+";
+                    nTimeZoneMinutes = nTimeZoneMinutes * -1;
+                }
+                else
+                {
+                    strTimeZoneSign = "-";
+                }
+
+                TimeSpan timeZoneDiff = new TimeSpan(0, nTimeZoneMinutes, 0);
+
+                string strLocationOfBirth = string.Format("{0}, {1}, {2}", m_strPOB.Trim(), m_strSOB.Trim(), m_strCOB.Trim());
+
+                string strAstroData = string.Format("{0}|{1}|{2}-{3}-{4} {5}.{6}.{7}|{8}{9:00}.{10:00}|{11}|{12} {13:000}.{14:00}|{15} {16:00}.{17:00}|Standard Time|0\n", m_strObjectName, m_strGender, m_nYear, m_nMonth, m_nDay, m_nHours, m_nMinutes, m_nSeconds, strTimeZoneSign, timeZoneDiff.Hours, timeZoneDiff.Minutes, strLocationOfBirth, m_strLonDirection, m_nLonDegrees, m_nLonMinutes, m_strLatDirection, m_nLatDegrees, m_nLatMinutes);
+
+                string strPDFFile = string.Format(@"{0}\{1}.pdf", m_strPDFStorePath, m_strObjectName);
+
+                if (BuildAstroCharts(strAstroData, strPDFFile, ref strErrorMessage) == false)
+                {
+                    MessageBox.Show(strErrorMessage, "PDF Generation - Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    System.Diagnostics.Process.Start(strPDFFile);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "PDF Generation - Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnPDF_Click(object sender, EventArgs e)
+        {
+            ResultsForm_OnPDFRequested(sender, e);
+        }
+
+        private bool CalculateChartDataFromInput(string strAstroData, out AstroChartData chartData, ref string strErrorMessage)
+        {
+            chartData = null;
+            string strData = "";
+            astroPerson apObj = new astroPerson();
+
+            try
+            {
+                strErrorMessage = "";
+
+                string[] strFileLineElements = strAstroData.Split('|');
+
+                if (strFileLineElements.Length != 9)
+                {
+                    strErrorMessage = string.Format("Invalid record found in data\r\nRecord:" + strAstroData);
+                    return false;
+                }
+
+                apObj.Clear();
+
+                apObj.Name = strFileLineElements[0].Trim();
+                apObj.Sex = strFileLineElements[1].Trim();
+                apObj.BirthDateTime = DateTime.Parse(strFileLineElements[2].Trim().Replace(".", ":"), CultureInfo.CreateSpecificCulture("ta-IN"), DateTimeStyles.None);
+
+                strData = strFileLineElements[3].Trim();
+                apObj.TimeZoneValue = strData;
+                int nTZHours = Convert.ToInt32(strData.Substring(1, 2));
+                int nTZMinutes = Convert.ToInt32(strData.Substring(4, 2));
+                if (strData[0] == '-')
+                {
+                    apObj.TimeZoneDifference -= TimeSpan.Parse(string.Format("0.{0}:{1}:00", nTZHours, nTZMinutes));
+                }
+                else
+                {
+                    apObj.TimeZoneDifference += TimeSpan.Parse(string.Format("0.{0}:{1}:00", nTZHours, nTZMinutes));
+                }
+
+                apObj.PlaceOfBirth = strFileLineElements[4].Trim();
+
+                strData = strFileLineElements[5].Trim();
+                apObj.Longitude = strData;
+                apObj.LongitudeDegrees = Convert.ToInt32(strData.Substring(5, 3));
+                apObj.LongitudeMinutes = Convert.ToInt32(strData.Substring(9, 2));
+                if (strData.Substring(0, 4) == "WEST")
+                {
+                    apObj.LongitudeDegrees *= -1;
+                    apObj.LongitudeMinutes *= -1;
+                }
+
+                strData = strFileLineElements[6].Trim();
+                apObj.Latitude = strData;
+                apObj.LatitudeDegrees = Convert.ToInt32(strData.Substring(6, 2));
+                apObj.LatitudeMinutes = Convert.ToInt32(strData.Substring(9, 2));
+                if (strData.Substring(0, 5) == "SOUTH")
+                {
+                    apObj.LatitudeDegrees *= -1;
+                    apObj.LatitudeMinutes *= -1;
+                }
+
+                apObj.TimeZoneName = strFileLineElements[7].Trim();
+                apObj.HourCorrection = Convert.ToInt32(strFileLineElements[8].Trim());
+
+                apObj.BirthDateTimeUTC = apObj.BirthDateTime + apObj.TimeZoneDifference;
+                if (apObj.HourCorrection > 0)
+                {
+                    apObj.BirthDateTimeUTC -= new TimeSpan(apObj.HourCorrection, 0, 0);
+                }
+
+                astroChart acObj = new astroChart();
+
+                astroChart.SwissPath = m_strSWEParentFolder;
+                astroChart.SWEConFilePath = m_strSWEConFilePath;
+                astroChart.SWEFolderPath = m_strSWEFolderPath;
+                astroChart.HousingSystem = "P";
+                astroChart.PrintAyanamsaCalculation = 0;
+                astroChart.PrintAstroTables = 0;
+                astroChart.PrintDasaTables = 1;
+
+                if (acObj.CalculateChartData(ref apObj, m_nAyanamsa, out chartData, ref strErrorMessage) == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                strErrorMessage = ex.Message;
+            }
+
+            return false;
         }
 
         private void DayValue_KeyPressed(object sender, KeyPressEventArgs e)

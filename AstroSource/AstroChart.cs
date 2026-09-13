@@ -783,7 +783,12 @@ namespace srlWebCom.Astro.AstroObjects
                     {
                         nPlanetsInStars = 0;
                         nPlanetsInStars = GetPlanetsInTheStarsOf(AO.Name, ref strPlanetsInStars);
-                        if (nPlanetsInStars == 0)
+                        if (AO.StarLord.ToUpper() == AO.Name.ToUpper())
+                        {
+                            AO.Strength = "#";
+                            AO.PlanetsInStars = nPlanetsInStars;
+                        }
+                        else if (nPlanetsInStars == 0)
                         {
                             AO.Strength = "*";
                             AO.PlanetsInStars = 0;
@@ -932,25 +937,25 @@ namespace srlWebCom.Astro.AstroObjects
         {
             int nResult = 0;
 
-            // Conjunction 0 Major – Neutral
+            // Conjunction 0 Major ï¿½ Neutral
             if (nDegree >= 0 && nDegree <= 15)
             {
                 return 1;
             }
 
-            // Sextile 60 Major – Soft / Coaxing
+            // Sextile 60 Major ï¿½ Soft / Coaxing
             if (nDegree >= 52 && nDegree <= 74)
             {
                 return 2;
             }
 
-            // Square 90 Major – Hard / Active
+            // Square 90 Major ï¿½ Hard / Active
             if (nDegree >= 75 && nDegree <= 105)
             {
                 return 3;
             }
 
-            // Trine 120 Major – Soft / Passive
+            // Trine 120 Major ï¿½ Soft / Passive
             if (nDegree >= 106 && nDegree <= 128)
             {
                 return 2;
@@ -1471,14 +1476,21 @@ namespace srlWebCom.Astro.AstroObjects
 
                         strSignName = GetPositionalSignName(AO.OSignTamil);
 
+                        string strMarker = "";
+                        if (AO.StarLord.ToUpper() == AO.OShortName.ToUpper() && AO.OType.ToUpper() == "PLANET")
+                        {
+                            strMarker += "#";
+                        }
                         if (AO.OSpeedPerDayDirection.PadLeft(1, ' ') == "R" && strPlanetName.ToUpper() != "RA" && strPlanetName.ToUpper() != "KE")
                         {
-                            // strRasiData = string.Format("{0}! - {1} / {2}({3})|", strPlanetName, AO.OSignLongitude.ShortValue, AO.StarLord, starObj.PositionInStar);
-                            strRasiData = string.Format("{0}(R) - {1}|", strPlanetName.PadRight(nPadChars), AO.OSignLongitude.Value);
+                            strMarker += "R";
+                        }
+                        if (strMarker.Length > 0)
+                        {
+                            strRasiData = string.Format("{0}{1} - {2}|", strPlanetName.PadRight(nPadChars), strMarker, AO.OSignLongitude.Value);
                         }
                         else
                         {
-                            // strRasiData = string.Format("{0}  - {1} / {2}({3})|", strPlanetName, AO.OSignLongitude.ShortValue, AO.StarLord, starObj.PositionInStar);
                             strRasiData = string.Format("{0} - {1}|", strPlanetName.PadRight(nPadChars), AO.OSignLongitude.Value);
                         }
 
@@ -1674,21 +1686,17 @@ namespace srlWebCom.Astro.AstroObjects
 
                 float[] additionalInfoPanel = { 3, 2.5f, 2.5f, 2.5f, 2.5f };
                 iText.Layout.Borders.Border DottedBorderObj = new DottedBorder(1);
-                iText.Layout.Element.Table astroChartInfo1 = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(additionalInfoPanel)).UseAllAvailableWidth();
-                iText.Layout.Element.Table astroChartInfo2 = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(additionalInfoPanel)).UseAllAvailableWidth();
-                iText.Layout.Element.Table astroChartInfo3 = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(additionalInfoPanel)).UseAllAvailableWidth();
-                iText.Layout.Element.Table astroChartInfo4 = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(additionalInfoPanel)).UseAllAvailableWidth();
 
-                astroChartInfo1.SetBorder(Border.NO_BORDER);
-                astroChartInfo2.SetBorder(Border.NO_BORDER);
-                astroChartInfo3.SetBorder(Border.NO_BORDER);
-                astroChartInfo4.SetBorder(Border.NO_BORDER);
+                iText.Layout.Element.Table astroPlanetsTable = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(additionalInfoPanel)).UseAllAvailableWidth();
+                astroPlanetsTable.SetBorder(Border.NO_BORDER);
+                astroPlanetsTable.SetMarginTop(5);
+                astroPlanetsTable.SetMarginBottom(5);
 
-                astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Pl").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sgn").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Str").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sub").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("SS").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Pl").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sgn").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Str").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sub").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("SS").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
 
                 for (int pIndex = 0; pIndex < 9; pIndex++)
                 {
@@ -1696,39 +1704,41 @@ namespace srlWebCom.Astro.AstroObjects
 
                     if (plObj != null)
                     {
-                        if (plObj.Name.ToUpper() == "SU" || plObj.Name.ToUpper() == "MO" || plObj.Name.ToUpper() == "MA" || plObj.Name.ToUpper() == "ME" || plObj.Name.ToUpper() == "JU")
+                        string strPlMarker = "";
+                        if (plObj.StarLord.ToUpper() == plObj.Name.ToUpper())
                         {
-                            if (plObj.PlanetsInStars == 0)
-                            {
-                                astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.Name + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
-                            }
-                            else
-                            {
-                                astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.Name).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorPlanet)));
-                            }
-                            astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.SignLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(plObj.StarSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            astroChartInfo1.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.StarSubSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                            strPlMarker = "#";
                         }
-                        else if (plObj.Name.ToUpper() == "VE" || plObj.Name.ToUpper() == "SA" || plObj.Name.ToUpper() == "RA" || plObj.Name.ToUpper() == "KE")
+                        else if (plObj.PlanetsInStars == 0)
                         {
-                            if (plObj.PlanetsInStars == 0)
-                            {
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.Name + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
-                            }
-                            else
-                            {
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.Name).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorPlanet)));
-                            }
-                            astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.SignLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(plObj.StarSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.StarSubSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                            strPlMarker = "*";
                         }
+                        if (strPlMarker.Length > 0)
+                        {
+                            astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.Name + strPlMarker).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
+                        }
+                        else
+                        {
+                            astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.Name).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorPlanet)));
+                        }
+                        astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.SignLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                        astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                        astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(plObj.StarSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                        astroPlanetsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(plObj.StarSubSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
                     }
                     plObj = null;
                 }
+
+                iText.Layout.Element.Table astroCuspsTable = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(additionalInfoPanel)).UseAllAvailableWidth();
+                astroCuspsTable.SetBorder(Border.NO_BORDER);
+                astroCuspsTable.SetMarginTop(5);
+                astroCuspsTable.SetMarginBottom(5);
+
+                astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Cus").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sgn").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Str").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sub").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
+                astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("SS").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
 
                 for (int nHouseIdx = 1; nHouseIdx <= 12; nHouseIdx++)
                 {
@@ -1737,69 +1747,32 @@ namespace srlWebCom.Astro.AstroObjects
                     {
                         kpCommonObject hoSubObj = GetFormattedKPAstroCommonObject(hoObj.StarSubLord);
 
-                        if (hoSubObj != null)
+                        astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.Name).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorPlanet)));
+                        astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.SignLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                        astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                        if (hoSubObj != null && hoSubObj.StarLord.ToUpper() == hoSubObj.Name.ToUpper())
                         {
-                            if (nHouseIdx == 1 )
-                            {
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Cus").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sgn").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Str").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("Sub").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorHeaderBackgroundGreen).Add(new Paragraph("SS").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize)));
-
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.Name).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorPlanet)));
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.SignLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                if (hoSubObj.PlanetsInStars == 0)
-                                {
-                                    astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
-                                }
-                                else
-                                {
-                                    astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                }
-                                astroChartInfo2.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarSubSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            }
-
-                            if (nHouseIdx >= 2 && nHouseIdx <= 7)
-                            {
-                                astroChartInfo3.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.Name).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorPlanet)));
-                                astroChartInfo3.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.SignLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                astroChartInfo3.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                if (hoSubObj.PlanetsInStars == 0)
-                                {
-                                    astroChartInfo3.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
-                                }
-                                else
-                                {
-                                    astroChartInfo3.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                }
-                                astroChartInfo3.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarSubSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            }
-
-                            if (nHouseIdx >= 8 && nHouseIdx <= 12)
-                            {
-                                astroChartInfo4.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.Name).SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorPlanet)));
-                                astroChartInfo4.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.SignLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                astroChartInfo4.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                if (hoSubObj.PlanetsInStars == 0)
-                                {
-                                    astroChartInfo4.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
-                                }
-                                else
-                                {
-                                    astroChartInfo4.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                                }
-                                astroChartInfo4.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarSubSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
-                            }
+                            astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord + "#").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
                         }
+                        else if (hoSubObj != null && hoSubObj.PlanetsInStars == 0)
+                        {
+                            astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
+                        }
+                        else
+                        {
+                            astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).SetBackgroundColor(colorSubColumnBackground).Add(new Paragraph(hoObj.StarSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
+                        }
+                        astroCuspsTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph(hoObj.StarSubSubLord).SetFont(PdfFontObj).SetFontSize(PdfMinorFontSize)));
                         hoSubObj = null;
                     }
-
                     hoObj = null;
                 }
 
-                astroChartInfo4.AddCell(new Cell(1, 6).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetBorder(DottedBorderObj).Add(new Paragraph("* No planets in its stars").SetFont(PdfFontBoldObj).SetFontSize(PdfMinorFontSize).SetFontColor(colorNoPlanetInStars)));
+                Paragraph paraLegend = new Paragraph("# Planet in self star   * No planets in its stars   R Retrograde");
+                paraLegend.SetTextAlignment(TextAlignment.CENTER);
+                paraLegend.SetFont(PdfFontBoldObj);
+                paraLegend.SetFontSize(PdfMinorFontSize);
+                paraLegend.SetFontColor(colorNoPlanetInStars);
 
                 #endregion
 
@@ -1834,9 +1807,18 @@ namespace srlWebCom.Astro.AstroObjects
 
                         astroSignificationTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetHeight(significationRowHeight).Add(new Paragraph(plObj.StarLord).SetFont(PdfFontObj).SetFontSize(PdfBiggerFontSize)));
 
-                        if (plObj.PlanetsInStars == 0)
+                        string strPlMarker3 = "";
+                        if (plObj.StarLord.ToUpper() == plObj.Name.ToUpper())
                         {
-                            astroSignificationTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetHeight(significationRowHeight).Add(new Paragraph(plObj.Name + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfBiggerFontSize).SetFontColor(colorNoPlanetInStars)));
+                            strPlMarker3 = "#";
+                        }
+                        else if (plObj.PlanetsInStars == 0)
+                        {
+                            strPlMarker3 = "*";
+                        }
+                        if (strPlMarker3.Length > 0)
+                        {
+                            astroSignificationTable.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetHeight(significationRowHeight).Add(new Paragraph(plObj.Name + strPlMarker3).SetFont(PdfFontBoldObj).SetFontSize(PdfBiggerFontSize).SetFontColor(colorNoPlanetInStars)));
                         }
                         else
                         {
@@ -1864,90 +1846,72 @@ namespace srlWebCom.Astro.AstroObjects
                 #region Rasi Chart
                 // pdfDocObj.Add(headerData);
 
-                float[] columnZodiac = { 3, 3, 3, 3, 5 };
+                float[] columnZodiac = { 3, 3, 3, 3 };
                 iText.Layout.Element.Table astroTable = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(columnZodiac)).UseAllAvailableWidth();
 
-                // Meenam
+                // Row 0: Pisces, Aries, Taurus, Gemini
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[11]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[11], true);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Mesham
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[0]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[0], false);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Rishabham
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[1]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[1], false);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Mithunam
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[2]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[2], false);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Information Panel 1
-                strSingleRasiInfo = "";
-                AddChartInfo(ref astroTable, astroChartInfo1, 1, 0, 1);
-
-                // Kumbam
+                // Row 1: Aquarius, Info Upper (2 cols), Cancer
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[10]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[10], true);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
                 AddChartInfo(ref astroTable, astroChartUpperPanel, 2, 0, 1);
 
-                // Katakam
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[3]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[3], false);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Information Panel 2
-                strSingleRasiInfo = "";
-                AddChartInfo(ref astroTable, astroChartInfo2, 1, 1, 1);
-
-                // Makaram
+                // Row 2: Capricorn, Info Bottom (2 cols), Leo
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[9]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[9], true);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
                 AddChartInfo(ref astroTable, astroChartBottomPanel, 2, 1, 0);
 
-                // Simham
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[4]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[4], false);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Information Panel 3
-                strSingleRasiInfo = "";
-                AddChartInfo(ref astroTable, astroChartInfo3, 1, 1, 1);
-
-                // Thanusu
+                // Row 3: Sagittarius, Scorpio, Libra, Virgo
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[8]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[8], true);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Viruchikam
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[7]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[7], true);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Thulam
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[6]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[6], true);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Kanni
                 strSingleRasiInfo = "";
                 if (string.IsNullOrEmpty(RasiDataArray[5]) == false) strSingleRasiInfo = FormatRasiData(RasiDataArray[5], false);
                 AddChartCell(ref astroTable, strSingleRasiInfo);
 
-                // Information Panel 4
-                strSingleRasiInfo = "";
-                AddChartInfo(ref astroTable, astroChartInfo4, 1, 1, 0);
-
                 pdfDocObj.Add(astroTable);
+
+                pdfDocObj.Add(astroPlanetsTable);
+                pdfDocObj.Add(new Paragraph(""));
+                pdfDocObj.Add(astroCuspsTable);
+                pdfDocObj.Add(new Paragraph(""));
+                pdfDocObj.Add(paraLegend);
 
                 pdfDocObj.Add(new Paragraph(""));
 
@@ -2003,9 +1967,18 @@ namespace srlWebCom.Astro.AstroObjects
 
                         if (PObj != null)
                         {
-                            if (PObj.PlanetsInStars == 0)
+                            string strPlMarker4 = "";
+                            if (PObj.StarLord.ToUpper() == PObj.Name.ToUpper())
                             {
-                                astronomyMaster.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetHeight(25).Add(new Paragraph(PObj.Name + "*").SetFontSize(PdfDefaultFontSize).SetFont(PdfFontBoldObj).SetFontColor(colorNoPlanetInStars)));
+                                strPlMarker4 = "#";
+                            }
+                            else if (PObj.PlanetsInStars == 0)
+                            {
+                                strPlMarker4 = "*";
+                            }
+                            if (strPlMarker4.Length > 0)
+                            {
+                                astronomyMaster.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetHeight(25).Add(new Paragraph(PObj.Name + strPlMarker4).SetFontSize(PdfDefaultFontSize).SetFont(PdfFontBoldObj).SetFontColor(colorNoPlanetInStars)));
                             }
                             else
                             {
@@ -2067,9 +2040,18 @@ namespace srlWebCom.Astro.AstroObjects
 
                         if (PObj != null)
                         {
-                            if (PObj.PlanetsInStars == 0)
+                            string strPlMarker5 = "";
+                            if (PObj.StarLord.ToUpper() == PObj.Name.ToUpper())
                             {
-                                aspectMaster.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetHeight(25).Add(new Paragraph(PObj.Name + "*").SetFont(PdfFontBoldObj).SetFontSize(PdfDefaultFontSize).SetFontColor(colorNoPlanetInStars)));
+                                strPlMarker5 = "#";
+                            }
+                            else if (PObj.PlanetsInStars == 0)
+                            {
+                                strPlMarker5 = "*";
+                            }
+                            if (strPlMarker5.Length > 0)
+                            {
+                                aspectMaster.AddCell(new Cell().SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetHeight(25).Add(new Paragraph(PObj.Name + strPlMarker5).SetFont(PdfFontBoldObj).SetFontSize(PdfDefaultFontSize).SetFontColor(colorNoPlanetInStars)));
                             }
                             else
                             {
@@ -2173,6 +2155,433 @@ namespace srlWebCom.Astro.AstroObjects
             }
 
             return false;
+        }
+
+        public bool CalculateChartData(ref astroPerson apObj, int nAyanamsa, out AstroChartData chartData, ref string strErrorMessage)
+        {
+            #region Variable Declaration
+            DateTime birthDateTimeUTC = apObj.BirthDateTimeUTC;
+            int longitudeDegrees = apObj.LongitudeDegrees;
+            int longitudeMinutes = apObj.LongitudeMinutes;
+            int latitudeDegrees = apObj.LatitudeDegrees;
+            int latitudeMinutes = apObj.LatitudeMinutes;
+            int iDIndex = 0;
+            astroDasa dasaObj = new astroDasa();
+            swephObject SEObj = new swephObject();
+            string[] RasiDataArray = new string[12];
+            int SEAyanamsa = 0;
+            string strStarLords = "";
+            string DasaLord = "";
+            int DasaBalanceYears = 0;
+            int DasaBalanceMonths = 0;
+            int DasaBalanceDays = 0;
+            string strDasaLord = "";
+            chartData = null;
+            #endregion
+
+            try
+            {
+                AstroElements.Clear();
+                KPAstroObjectList.Clear();
+
+                if (!dasaObj.LoadDasaChart(ref strErrorMessage))
+                    return false;
+
+                SEAyanamsa = nAyanamsa;
+
+                if (!swephObject.KPAstroObject.LoadKPStarSubLordsTable())
+                {
+                    strErrorMessage = "Unable to load KP Start Table";
+                    return false;
+                }
+
+                SEObj.SWEConFilePath = SWEConFilePath;
+                SEObj.SWEFolderPath = SWEFolderPath;
+
+                if (!SEObj.Process(birthDateTimeUTC, longitudeDegrees, longitudeMinutes, latitudeDegrees, latitudeMinutes, HousingSystem, SEAyanamsa, false))
+                {
+                    strErrorMessage = SEObj.ErrorMessage;
+                    return false;
+                }
+
+                AstroElements.Clear();
+
+                foreach (astroObject AO in SEObj.AstroObjects)
+                {
+                    strStarLords = string.Format("{0}", swephObject.KPAstroObject.GetKPStarSubLords(AO.OSignEnglish, AO.OSignLongitude, 3));
+                    AO.SetStarLords(strStarLords);
+
+                    if (AO.OName.IndexOf("MOON") != -1)
+                    {
+                        strDasaLord = swephObject.KPAstroObject.GetKPStarSubLords(AO.OSignEnglish, AO.OSignLongitude, 1);
+                        VMDasaLord = strDasaLord;
+                        DasaLord = swephObject.GetPlanetName(strDasaLord).ToUpper();
+
+                        int nDasaYears = swephObject.KPAstroObject.GetDasaYears(strDasaLord);
+                        int nStarCounts = (AO.OZodiacLongitude.TotalSeconds / 48000);
+                        int nMinutesRemaining = (((nStarCounts + 1) * 48000) - AO.OZodiacLongitude.TotalSeconds) / 60;
+                        int nDaysBalance = (int)Math.Ceiling((nMinutesRemaining * nDasaYears * 365.25) / 800);
+                        VMTotalDasaBalanceDays = nDaysBalance;
+
+                        int nMonths = (int)(nDaysBalance / 30.4375);
+                        DasaBalanceDays = (int)Math.Ceiling(nDaysBalance - (nMonths * 30.4375));
+                        DasaBalanceYears = nMonths / 12;
+                        DasaBalanceMonths = nMonths - (DasaBalanceYears * 12);
+
+                        dtDasaStartDate = apObj.BirthDateTime.AddDays(VMTotalDasaBalanceDays);
+                        dtDasaStartDate = dtDasaStartDate.AddYears((int)(-1 * nDasaYears));
+                    }
+
+                    if (swephObject.IsAstroObjectListed(AO.OName))
+                    {
+                        if (AO.OName == "TRUE NODE")
+                        {
+                            AO.OName = "RAHU";
+                            AO.OType = "Planet";
+                            AO.OShortName = "Ra";
+                            AstroElements.Add(AO);
+                            astroObject Kethu = new astroObject();
+                            Kethu = AO.DeepClone();
+                            Kethu.OName = "KETHU";
+                            Kethu.OType = "Planet";
+                            Kethu.OShortName = "Ke";
+                            Kethu.OZodiacLongitude.Add(180, 0, 0);
+                            Kethu.SetAstroNames();
+                            strStarLords = string.Format("{0}", swephObject.KPAstroObject.GetKPStarSubLords(Kethu.OSignEnglish, Kethu.OSignLongitude, 3));
+                            Kethu.SetStarLords(strStarLords);
+                            AstroElements.Add(Kethu);
+                        }
+                        else
+                        {
+                            if (AO.OName != "MEAN NODE")
+                            {
+                                string strOName = AO.OName.ToUpper();
+                                if (strOName.Length > 5)
+                                {
+                                    if (strOName.Substring(0, 5) == "HOUSE")
+                                        AO.OType = "HOUSE";
+                                }
+                                AstroElements.Add(AO);
+                            }
+                        }
+                    }
+                }
+
+                AstroElements.Sort();
+                dasaObj.GenerateDasaChart(apObj.BirthDateTime.ToString("yyyy-MM-dd"), DasaLord, DasaBalanceYears, DasaBalanceMonths, DasaBalanceDays);
+
+                string strPlanetName = "";
+                string strSignName = "";
+                string strRasiData = "";
+                int nPadChars = 0;
+
+                for (iDIndex = 0; iDIndex < AstroElements.Count; iDIndex++)
+                {
+                    astroObject AO = (astroObject)AstroElements[iDIndex];
+
+                    if (AO.OType.ToUpper() == "PLANET" || AO.OType.ToUpper() == "HOUSE")
+                    {
+                        strPlanetName = AO.OShortName;
+                        nPadChars = 3;
+                        if (AO.OType.ToUpper() == "HOUSE")
+                        {
+                            nPadChars = 4;
+                            strPlanetName = "~" + ConvertToRomanLetters(AO.OShortName);
+                        }
+
+                        strSignName = GetPositionalSignName(AO.OSignTamil);
+
+                        string strMarker = "";
+                        if (AO.StarLord.ToUpper() == AO.OShortName.ToUpper() && AO.OType.ToUpper() == "PLANET")
+                            strMarker += "#";
+                        if (AO.OSpeedPerDayDirection.PadLeft(1, ' ') == "R" && strPlanetName.ToUpper() != "RA" && strPlanetName.ToUpper() != "KE")
+                            strMarker += "R";
+                        if (strMarker.Length > 0)
+                            strRasiData = string.Format("{0}{1} - {2}|", strPlanetName.PadRight(nPadChars), strMarker, AO.OSignLongitude.Value);
+                        else
+                            strRasiData = string.Format("{0} - {1}|", strPlanetName.PadRight(nPadChars), AO.OSignLongitude.Value);
+
+                        switch (strSignName.ToUpper())
+                        {
+                            case " 1.MESHAM": RasiDataArray[0] += strRasiData; break;
+                            case " 2.RISHABAM": RasiDataArray[1] += strRasiData; break;
+                            case " 3.MITHUNAM": RasiDataArray[2] += strRasiData; break;
+                            case " 4.KATAKAM": RasiDataArray[3] += strRasiData; break;
+                            case " 5.SIMHAM": RasiDataArray[4] += strRasiData; break;
+                            case " 6.KANNI": RasiDataArray[5] += strRasiData; break;
+                            case " 7.THULAM": RasiDataArray[6] += strRasiData; break;
+                            case " 8.VIRUCHIKAM": RasiDataArray[7] += strRasiData; break;
+                            case " 9.DHANUSU": RasiDataArray[8] += strRasiData; break;
+                            case "10.MAKARAM": RasiDataArray[9] += strRasiData; break;
+                            case "11.KUMBAM": RasiDataArray[10] += strRasiData; break;
+                            case "12.MEENAM": RasiDataArray[11] += strRasiData; break;
+                        }
+                    }
+                    AO = null;
+                }
+
+                KPAstroObjectList.Clear();
+                KPAstroTable.Clear();
+
+                if (LoadKPAstroObjectList() == false)
+                    throw new Exception("Unable to load KP Astro Objects List");
+
+                if (PrepareKPAstroTables() == false)
+                    throw new Exception("Unable to prepare KP Astro Table");
+
+                chartData = new AstroChartData();
+                chartData.RasiDataArray = RasiDataArray;
+
+                string strTimeZoneValue = apObj.TimeZoneValue;
+                if (strTimeZoneValue.Length > 0)
+                {
+                    if (strTimeZoneValue[0] == '-')
+                        strTimeZoneValue = strTimeZoneValue.Replace('-', '+');
+                    else if (strTimeZoneValue[0] == '+')
+                        strTimeZoneValue = strTimeZoneValue.Replace('+', '-');
+                }
+
+                string strSex = "-";
+                if (apObj.Sex.ToUpper() == "MALE") strSex = "Male";
+                if (apObj.Sex.ToUpper() == "FEMALE") strSex = "Female";
+                if (apObj.Sex.ToUpper() == "TRANSIT") strSex = "Transit";
+
+                string strCName = apObj.Name;
+                if (strCName.Length > 23) strCName = strCName.Substring(0, 23);
+
+                chartData.Name = strCName;
+                chartData.Sex = strSex;
+                chartData.DateTimeOfBirth = string.Format("{0}  ({1})", apObj.BirthDateTime.ToString("dd-MM-yyyy  HH:mm:ss"), strTimeZoneValue);
+
+                string strPlaceOfBirth = apObj.PlaceOfBirth;
+                if (strPlaceOfBirth.Length > 25) strPlaceOfBirth = strPlaceOfBirth.Substring(0, 25);
+                chartData.PlaceOfBirth = strPlaceOfBirth;
+
+                string strLongitude = string.Format("{0}", apObj.Longitude);
+                strLongitude = strLongitude.Replace("EAST", "E");
+                strLongitude = strLongitude.Replace("WEST", "W");
+                chartData.Longitude = strLongitude;
+
+                string strLatitude = string.Format("{0}", apObj.Latitude);
+                strLatitude = strLatitude.Replace("NORTH", "N");
+                strLatitude = strLatitude.Replace("SOUTH", "S");
+                chartData.Latitude = strLatitude;
+
+                chartData.DasaBalance = string.Format("{0}   {1:00} Y - {2:00} M - {3:00} D", DasaLord, DasaBalanceYears, DasaBalanceMonths, DasaBalanceDays);
+                chartData.Ayanamsa = string.Format("{0} ({1})", SEObj.Ayanamsa.Value, GetShortAyanamsaName(Convert.ToString(nAyanamsa)));
+                chartData.SiderealTime = SEObj.SiderealTime;
+
+                kpCommonObject moonObj = GetFormattedKPAstroCommonObject("MO");
+                if (moonObj != null)
+                    chartData.MoonStarInfo = string.Format("{0} - {1}", moonObj.StarName, moonObj.StarPadham);
+
+                foreach (string strPlanet in PlanetTable)
+                {
+                    kpCommonObject plObj = GetFormattedKPAstroCommonObject(strPlanet);
+                    if (plObj != null)
+                    {
+                        PlanetData pd = new PlanetData();
+                        pd.Name = plObj.Name;
+                        pd.SignLord = plObj.SignLord;
+                        pd.StarLord = plObj.StarLord;
+                        pd.SubLord = plObj.StarSubLord;
+                        pd.SSLord = plObj.StarSubSubLord;
+                        pd.Strength = plObj.Strength;
+                        pd.PlanetsInStars = plObj.PlanetsInStars;
+                        chartData.PlanetList.Add(pd);
+                    }
+                }
+
+                for (int nHouseIdx = 1; nHouseIdx <= 12; nHouseIdx++)
+                {
+                    kpCommonObject hoObj = GetFormattedKPAstroCommonObject(Convert.ToString(nHouseIdx));
+                    if (hoObj != null)
+                    {
+                        CuspData cd = new CuspData();
+                        cd.HouseNo = nHouseIdx;
+                        cd.SignLord = hoObj.SignLord;
+                        cd.StarLord = hoObj.StarLord;
+                        cd.SubLord = hoObj.StarSubLord;
+                        cd.SSLord = hoObj.StarSubSubLord;
+
+                        kpCommonObject hoSubObj = GetFormattedKPAstroCommonObject(hoObj.StarSubLord);
+                        if (hoSubObj != null && hoSubObj.StarLord.ToUpper() == hoSubObj.Name.ToUpper())
+                            cd.SubStrength = "#";
+                        else if (hoSubObj != null && hoSubObj.PlanetsInStars == 0)
+                            cd.SubStrength = "*";
+                        else
+                            cd.SubStrength = "";
+
+                        chartData.CuspList.Add(cd);
+                    }
+                }
+
+                foreach (string strPlanet in PlanetTable)
+                {
+                    kpCommonObject plObj = GetFormattedKPAstroCommonObject(strPlanet);
+                    if (plObj != null)
+                    {
+                        HouseSignificationData hsd = new HouseSignificationData();
+                        hsd.StarWise = FormatSignificatorPlain(plObj.PrimeSignificators, plObj.GeneralSignificators);
+                        hsd.StarLord = plObj.StarLord;
+
+                        string strPlMarker = "";
+                        if (plObj.StarLord.ToUpper() == plObj.Name.ToUpper())
+                            strPlMarker = "#";
+                        else if (plObj.PlanetsInStars == 0)
+                            strPlMarker = "*";
+                        hsd.Planet = plObj.Name + strPlMarker;
+                        hsd.SubLord = plObj.StarSubLord;
+
+                        kpCommonObject plSubObj = GetFormattedKPAstroCommonObject(plObj.StarSubLord);
+                        if (plSubObj != null)
+                            hsd.SubWise = FormatSignificatorPlain(plSubObj.PrimeSignificators, plSubObj.GeneralSignificators);
+                        else
+                            hsd.SubWise = "";
+
+                        chartData.HouseSignificationList.Add(hsd);
+                    }
+                }
+
+                foreach (object dasaEntry in dasaObj.DasaChart)
+                {
+                    astroDasaPeriod dasaPeriod = (astroDasaPeriod)dasaEntry;
+                    DasaData dd = new DasaData();
+                    dd.DasaLord = dasaPeriod.DasaLord;
+                    dd.BukthiLord = dasaPeriod.BukthiLord;
+                    dd.StartDate = dasaPeriod.StartDate;
+                    dd.EndDate = dasaPeriod.EndDate;
+                    chartData.DasaList.Add(dd);
+                }
+
+                kpCommonObject HObj = GetRawKPAstroCommonObject("1");
+                if (HObj != null)
+                {
+                    AstronomyData ad = new AstronomyData();
+                    ad.Planet = HObj.Name;
+                    ad.Sign = HObj.Sign;
+                    ad.SLongitude = HObj.SLontitude;
+                    ad.ZLongitude = HObj.ZLongitude;
+                    ad.ZLatitude = HObj.ZLatitude;
+                    ad.Declination = HObj.Declination;
+                    chartData.AstronomyList.Add(ad);
+                }
+
+                foreach (string strPlanet in PlanetTable)
+                {
+                    kpCommonObject PObj = GetRawKPAstroCommonObject(strPlanet);
+                    if (PObj != null)
+                    {
+                        AstronomyData ad = new AstronomyData();
+                        ad.Planet = PObj.Name;
+                        ad.Sign = PObj.Sign;
+                        ad.SLongitude = PObj.SLontitude;
+                        ad.ZLongitude = PObj.ZLongitude;
+                        ad.ZLatitude = PObj.ZLatitude;
+                        ad.Declination = PObj.Declination;
+                        chartData.AstronomyList.Add(ad);
+                    }
+                }
+
+                if (HObj != null)
+                {
+                    AspectData ascAspect = new AspectData();
+                    ascAspect.Planet = HObj.Name;
+                    int pIdx = 0;
+                    foreach (string strPlanet in PlanetTable)
+                    {
+                        kpCommonObject RefObj = GetFormattedKPAstroCommonObject(strPlanet);
+                        if (RefObj != null)
+                        {
+                            astroPosition aspDiff = new astroPosition();
+                            if (HObj.ZLongitudePos.DegHours > RefObj.ZLongitudePos.DegHours)
+                            {
+                                aspDiff.Set(HObj.ZLongitudePos.DegHours, HObj.ZLongitudePos.Minutes, HObj.ZLongitudePos.Seconds);
+                                aspDiff.Sub(RefObj.ZLongitudePos.DegHours, RefObj.ZLongitudePos.Minutes, RefObj.ZLongitudePos.Seconds);
+                            }
+                            else
+                            {
+                                aspDiff.Set(RefObj.ZLongitudePos.DegHours, RefObj.ZLongitudePos.Minutes, RefObj.ZLongitudePos.Seconds);
+                                aspDiff.Sub(HObj.ZLongitudePos.DegHours, HObj.ZLongitudePos.Minutes, HObj.ZLongitudePos.Seconds);
+                            }
+                            int nDiff = aspDiff.DegHours > 180 ? 360 - aspDiff.DegHours : aspDiff.DegHours;
+                            ascAspect.Degrees[pIdx] = nDiff;
+                        }
+                        pIdx++;
+                    }
+                    chartData.AspectList.Add(ascAspect);
+                }
+
+                foreach (string strPlanet in PlanetTable)
+                {
+                    kpCommonObject PObj = GetRawKPAstroCommonObject(strPlanet);
+                    if (PObj != null)
+                    {
+                        AspectData plAspect = new AspectData();
+                        plAspect.Planet = PObj.Name;
+                        int pIdx = 0;
+                        foreach (string strRefPlanet in PlanetTable)
+                        {
+                            kpCommonObject RefObj = GetFormattedKPAstroCommonObject(strRefPlanet);
+                            if (RefObj != null)
+                            {
+                                astroPosition aspDiff = new astroPosition();
+                                if (PObj.ZLongitudePos.DegHours > RefObj.ZLongitudePos.DegHours)
+                                {
+                                    aspDiff.Set(PObj.ZLongitudePos.DegHours, PObj.ZLongitudePos.Minutes, PObj.ZLongitudePos.Seconds);
+                                    aspDiff.Sub(RefObj.ZLongitudePos.DegHours, RefObj.ZLongitudePos.Minutes, RefObj.ZLongitudePos.Seconds);
+                                }
+                                else
+                                {
+                                    aspDiff.Set(RefObj.ZLongitudePos.DegHours, RefObj.ZLongitudePos.Minutes, RefObj.ZLongitudePos.Seconds);
+                                    aspDiff.Sub(PObj.ZLongitudePos.DegHours, PObj.ZLongitudePos.Minutes, PObj.ZLongitudePos.Seconds);
+                                }
+                                int nDiff = aspDiff.DegHours > 180 ? 360 - aspDiff.DegHours : aspDiff.DegHours;
+                                plAspect.Degrees[pIdx] = nDiff;
+                            }
+                            pIdx++;
+                        }
+                        chartData.AspectList.Add(plAspect);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                strErrorMessage = ex.Message;
+            }
+            finally
+            {
+                SEObj = null;
+                dasaObj = null;
+            }
+
+            return false;
+        }
+
+        private string FormatSignificatorPlain(string strPrimeSignificators, string strGeneralSignificators)
+        {
+            string result = "";
+            string[] strPrime = strPrimeSignificators.Split(',');
+            foreach (string s in strPrime)
+            {
+                if (string.IsNullOrEmpty(s)) continue;
+                if (result.Length > 0) result += ", ";
+                result += s;
+            }
+            result += " (";
+            string[] strGeneral = strGeneralSignificators.Split(',');
+            bool bFirst = true;
+            foreach (string s in strGeneral)
+            {
+                if (string.IsNullOrEmpty(s)) continue;
+                if (!bFirst) result += ", ";
+                result += s;
+                bFirst = false;
+            }
+            result += ")";
+            return result;
         }
         #endregion
     }

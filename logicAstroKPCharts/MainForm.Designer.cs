@@ -92,6 +92,7 @@ namespace logicAstroKPCharts
             this.cmbLatDirection = new System.Windows.Forms.ComboBox();
             this.btnOpen = new System.Windows.Forms.Button();
             this.btnGenerate = new System.Windows.Forms.Button();
+            this.btnPDF = new System.Windows.Forms.Button();
             this.btnNewChart = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -439,13 +440,23 @@ namespace logicAstroKPCharts
             // 
             // btnGenerate
             // 
-            this.btnGenerate.Location = new System.Drawing.Point(242, 449);
+            this.btnGenerate.Location = new System.Drawing.Point(200, 449);
             this.btnGenerate.Name = "btnGenerate";
             this.btnGenerate.Size = new System.Drawing.Size(98, 37);
             this.btnGenerate.TabIndex = 21;
             this.btnGenerate.Text = "Generate";
             this.btnGenerate.UseVisualStyleBackColor = true;
             this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
+            // 
+            // btnPDF
+            // 
+            this.btnPDF.Location = new System.Drawing.Point(310, 449);
+            this.btnPDF.Name = "btnPDF";
+            this.btnPDF.Size = new System.Drawing.Size(98, 37);
+            this.btnPDF.TabIndex = 58;
+            this.btnPDF.Text = "PDF";
+            this.btnPDF.UseVisualStyleBackColor = true;
+            this.btnPDF.Click += new System.EventHandler(this.btnPDF_Click);
             // 
             // btnNewChart
             // 
@@ -607,6 +618,7 @@ namespace logicAstroKPCharts
             this.Controls.Add(this.lblLonLatWarning);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnNewChart);
+            this.Controls.Add(this.btnPDF);
             this.Controls.Add(this.btnGenerate);
             this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.label1);
@@ -708,6 +720,7 @@ namespace logicAstroKPCharts
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtCOB;
         private System.Windows.Forms.Button btnAboutUs;
+        private System.Windows.Forms.Button btnPDF;
     }
 }
 
