@@ -9,36 +9,28 @@ namespace logicAstroKPCharts
     public partial class ChartResultsUserControl : UserControl
     {
         private AstroChartData m_chartData;
-        private int m_lastChartWidth = 0;
-        private int m_lastChartHeight = 0;
+        private SouthIndianChartControl m_lagnaChart;
+        private SouthIndianChartControl m_kpChart;
 
         public ChartResultsUserControl()
         {
             InitializeComponent();
-            panelChart.Resize += panelChart_Resize;
+
+            m_lagnaChart = new SouthIndianChartControl();
+            m_lagnaChart.Dock = DockStyle.Fill;
+            m_lagnaChart.ChartType = SouthIndianChartType.Lagna;
+            panelLagnaChart.Controls.Add(m_lagnaChart);
+
+            m_kpChart = new SouthIndianChartControl();
+            m_kpChart.Dock = DockStyle.Fill;
+            m_kpChart.ChartType = SouthIndianChartType.KP;
+            panelKpChart.Controls.Add(m_kpChart);
         }
 
-        private void panelChart_Resize(object sender, EventArgs e)
+        private class ChartEntry
         {
-            if (m_chartData == null) return;
-            if (Math.Abs(panelChart.Width - m_lastChartWidth) < 8 && Math.Abs(panelChart.Height - m_lastChartHeight) < 8) return;
-            DrawRasiChart();
-        }
-
-        private class InfoLine
-        {
-            public string Text;
-            public float FontSize;
-            public FontStyle Style;
-            public Color ForeColor;
-
-            public InfoLine(string text, float fontSize, FontStyle style, Color foreColor)
-            {
-                Text = text;
-                FontSize = fontSize;
-                Style = style;
-                ForeColor = foreColor;
-            }
+            public string Name;
+            public bool IsCusp;
         }
 
         public void LoadChartData(AstroChartData chartData)
@@ -48,7 +40,9 @@ namespace logicAstroKPCharts
 
             lblTitle.Text = string.Format("KP Astrology Chart - {0}, {1}", m_chartData.Name, m_chartData.Sex);
 
-            DrawRasiChart();
+            m_lagnaChart.SetChartData(BuildLagnaEntries(), FindLagnaSign());
+            m_kpChart.SetChartData(BuildKpEntries(), -1);
+
             SetupPlanetTable();
             SetupCuspTable();
             SetupSignificationTable();
@@ -56,202 +50,78 @@ namespace logicAstroKPCharts
             SetupPlanetLegend();
         }
 
-        private void DrawRasiChart()
+        private List<SouthIndianChartEntry>[] BuildLagnaEntries()
         {
-            if (m_chartData == null) return;
+            List<SouthIndianChartEntry>[] all = new List<SouthIndianChartEntry>[12];
+            int lagnaSign = FindLagnaSign();
 
-            int chartW = panelChart.Width;
-            int chartH = panelChart.Height;
-            if (chartW <= 0 || chartH <= 0) return;
-
-            m_lastChartWidth = chartW;
-            m_lastChartHeight = chartH;
-
-            panelChart.SuspendLayout();
-            panelChart.Controls.Clear();
-
-            string[] signNames = {
-                "Meenam", "Mesham", "Rishabam", "Mithunam",
-                "Katakam", "Simham", "Kanni", "Thulam",
-                "Viruchikam", "Dhanusu", "Makaram", "Kumbam"
-            };
-
-            TableLayoutPanel tlp = new TableLayoutPanel();
-            tlp.Dock = DockStyle.Fill;
-            tlp.ColumnCount = 4;
-            tlp.RowCount = 4;
-            tlp.ColumnStyles.Clear();
-            tlp.RowStyles.Clear();
-
-            for (int c = 0; c < 4; c++)
-                tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            for (int r = 0; r < 4; r++)
-                tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-
-            tlp.Padding = new Padding(0);
-            tlp.Margin = new Padding(0);
-
-            int[,] cellMap = {
-                { 11, 0, 1, 2 },
-                { 10, -1, -1, 3 },
-                { 9, -1, -1, 4 },
-                { 8, 7, 6, 5 }
-            };
-
-            int cellW = chartW / 4;
-            int cellH = chartH / 4;
-
-            for (int row = 0; row < 4; row++)
+            for (int i = 0; i < 12; i++)
             {
-                for (int col = 0; col < 4; col++)
+                List<SouthIndianChartEntry> list = new List<SouthIndianChartEntry>();
+                foreach (ChartEntry ce in GetCellEntries(i))
                 {
-                    int idx = cellMap[row, col];
+                    if (!ce.IsCusp)
+                        list.Add(new SouthIndianChartEntry { Text = ce.Name, Kind = SouthIndianChartEntryKind.Planet });
+                }
+                if (i == lagnaSign)
+                    list.Add(new SouthIndianChartEntry { Text = "As", Kind = SouthIndianChartEntryKind.Ascendant });
+                all[i] = list;
+            }
+            return all;
+        }
 
-                    if (idx == -1)
-                    {
-                        if (row == 1 && col == 1)
-                        {
-                            Panel mergedPanel = new Panel();
-                            mergedPanel.Dock = DockStyle.Fill;
-                            mergedPanel.Margin = new Padding(1);
-                            mergedPanel.BorderStyle = BorderStyle.FixedSingle;
-                            mergedPanel.BackColor = Color.FromArgb(255, 255, 245);
-                            DrawMergedInfo(mergedPanel, cellW * 2, cellH * 2);
-                            tlp.Controls.Add(mergedPanel, 1, 1);
-                            tlp.SetColumnSpan(mergedPanel, 2);
-                            tlp.SetRowSpan(mergedPanel, 2);
-                        }
-                        continue;
-                    }
+        private List<SouthIndianChartEntry>[] BuildKpEntries()
+        {
+            List<SouthIndianChartEntry>[] all = new List<SouthIndianChartEntry>[12];
 
-                    Panel cellPanel = new Panel();
-                    cellPanel.Dock = DockStyle.Fill;
-                    cellPanel.Margin = new Padding(1);
-                    cellPanel.BorderStyle = BorderStyle.FixedSingle;
-                    cellPanel.BackColor = Color.White;
+            for (int i = 0; i < 12; i++)
+            {
+                List<SouthIndianChartEntry> list = new List<SouthIndianChartEntry>();
+                foreach (ChartEntry ce in GetCellEntries(i))
+                {
+                    SouthIndianChartEntryKind kind = ce.IsCusp ? SouthIndianChartEntryKind.Cusp : SouthIndianChartEntryKind.Planet;
+                    list.Add(new SouthIndianChartEntry { Text = ce.Name, Kind = kind });
+                }
+                all[i] = list;
+            }
+            return all;
+        }
 
-                    Label signLabel = new Label();
-                    signLabel.Text = signNames[idx];
-                    signLabel.Dock = DockStyle.Top;
-                    signLabel.Height = 20;
-                    signLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
-                    signLabel.ForeColor = Color.FromArgb(90, 90, 95);
-                    signLabel.TextAlign = ContentAlignment.MiddleCenter;
-                    signLabel.BackColor = Color.FromArgb(240, 248, 255);
-                    signLabel.Padding = new Padding(0);
-                    cellPanel.Controls.Add(signLabel);
+        private List<ChartEntry> GetCellEntries(int signIdx)
+        {
+            List<ChartEntry> result = new List<ChartEntry>();
+            string rasiData = m_chartData.RasiDataArray[signIdx];
+            if (string.IsNullOrEmpty(rasiData)) return result;
 
-                    string rasiData = m_chartData.RasiDataArray[idx];
-                    if (!string.IsNullOrEmpty(rasiData))
-                    {
-                        string[] entries = rasiData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                        int entryCount = entries.Length;
-                        int signHeaderH = 22;
-                        int availH = Math.Max(cellH - signHeaderH - 6, entryCount * 14);
-                        float step = entryCount > 0 ? (float)availH / entryCount : 0F;
-                        if (step > 20F) step = 20F;
+            string[] rawEntries = rasiData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string raw in rawEntries)
+            {
+                string[] parts = raw.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2) continue;
 
-                        float yPos = signHeaderH + 2;
+                string name = parts[0].Trim();
+                bool isCusp = name.StartsWith("~");
+                if (isCusp) name = name.Substring(1).Trim();
+                while (name.Contains("  "))
+                    name = name.Replace("  ", " ");
+                if (name.Length == 0) continue;
 
-                        foreach (string entry in entries)
-                        {
-                            string[] parts = entry.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (parts.Length == 2)
-                            {
-                                string planetName = parts[0].Trim();
-                                string position = parts[1].Trim();
-                                bool isCusp = planetName.StartsWith("~");
+                result.Add(new ChartEntry { Name = name, IsCusp = isCusp });
+            }
+            return result;
+        }
 
-                                if (isCusp)
-                                    planetName = planetName.Substring(1);
-
-                                Font pFont = new Font("Segoe UI", 8.5F, FontStyle.Bold);
-                                Font posFont = new Font("Segoe UI", 8F);
-
-                                Label planetLabel = new Label();
-                                planetLabel.AutoSize = true;
-                                planetLabel.Location = new Point(6, (int)yPos);
-                                planetLabel.Font = pFont;
-                                planetLabel.BackColor = Color.Transparent;
-                                planetLabel.ForeColor = isCusp ? Color.FromArgb(204, 0, 0) : Color.FromArgb(0, 0, 204);
-                                planetLabel.Text = planetName;
-                                cellPanel.Controls.Add(planetLabel);
-
-                                Label posLabel = new Label();
-                                posLabel.Text = position;
-                                posLabel.AutoSize = true;
-                                posLabel.Font = posFont;
-                                posLabel.ForeColor = Color.FromArgb(60, 60, 60);
-                                posLabel.BackColor = Color.Transparent;
-                                Size nameSize = TextRenderer.MeasureText(planetName, pFont);
-                                Size posSize = TextRenderer.MeasureText(position, posFont);
-                                posLabel.Location = new Point(Math.Max(6 + nameSize.Width + 8, cellW - posSize.Width - 6), (int)yPos);
-                                cellPanel.Controls.Add(posLabel);
-
-                                yPos += step;
-                            }
-                        }
-                    }
-
-                    tlp.Controls.Add(cellPanel, col, row);
+        private int FindLagnaSign()
+        {
+            for (int i = 0; i < 12; i++)
+            {
+                foreach (ChartEntry ce in GetCellEntries(i))
+                {
+                    if (ce.IsCusp && string.Compare(ce.Name, "Lag", StringComparison.OrdinalIgnoreCase) == 0)
+                        return i;
                 }
             }
-
-            panelChart.Controls.Add(tlp);
-            tlp.BringToFront();
-            panelChart.ResumeLayout(false);
-        }
-
-        private void DrawMergedInfo(Panel p, int w, int h)
-        {
-            List<InfoLine> left = new List<InfoLine>();
-            left.Add(new InfoLine(m_chartData.Name + ", " + m_chartData.Sex, 9F, FontStyle.Bold, Color.FromArgb(0, 0, 153)));
-            left.Add(new InfoLine("DOB : " + m_chartData.DateTimeOfBirth, 8F, FontStyle.Regular, Color.Black));
-            left.Add(new InfoLine("Place : " + m_chartData.PlaceOfBirth, 8F, FontStyle.Regular, Color.Black));
-            left.Add(new InfoLine("Star : " + m_chartData.MoonStarInfo, 8F, FontStyle.Regular, Color.Black));
-            left.Add(new InfoLine("Dasa : " + m_chartData.DasaBalance, 8.5F, FontStyle.Bold, Color.Black));
-
-            List<InfoLine> right = new List<InfoLine>();
-            right.Add(new InfoLine("Long : " + m_chartData.Longitude, 8F, FontStyle.Regular, Color.Black));
-            right.Add(new InfoLine("Lat : " + m_chartData.Latitude, 8F, FontStyle.Regular, Color.Black));
-            right.Add(new InfoLine("Ayanamsa : " + m_chartData.Ayanamsa, 8F, FontStyle.Regular, Color.Black));
-            right.Add(new InfoLine("Sidereal : " + m_chartData.SiderealTime, 8F, FontStyle.Regular, Color.Black));
-
-            float lineH = 19F;
-
-            if (w >= 400)
-            {
-                int maxLines = Math.Max(left.Count, right.Count);
-                float totalH = maxLines * lineH + 10;
-                float y0 = Math.Max(6, (h - totalH) / 2);
-                DrawInfoColumn(p, left, 10, y0, lineH);
-                DrawInfoColumn(p, right, w * 0.5F + 8, y0, lineH);
-            }
-            else
-            {
-                List<InfoLine> all = new List<InfoLine>(left);
-                all.AddRange(right);
-                float totalH = all.Count * lineH + 10;
-                float y0 = Math.Max(4, (h - totalH) / 2);
-                DrawInfoColumn(p, all, 8, y0, lineH);
-            }
-        }
-
-        private void DrawInfoColumn(Panel p, List<InfoLine> lines, float x, float y0, float lineH)
-        {
-            float y = y0;
-            foreach (InfoLine il in lines)
-            {
-                Label lbl = new Label();
-                lbl.Text = il.Text;
-                lbl.AutoSize = true;
-                lbl.Font = new Font("Segoe UI", il.FontSize, il.Style);
-                lbl.ForeColor = il.ForeColor;
-                lbl.BackColor = Color.Transparent;
-                lbl.Location = new Point((int)x, (int)y);
-                p.Controls.Add(lbl);
-                y += lineH;
-            }
+            return -1;
         }
 
         private void DisableSorting(DataGridView dgv)

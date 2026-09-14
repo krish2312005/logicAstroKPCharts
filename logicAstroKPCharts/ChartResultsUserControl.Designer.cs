@@ -19,7 +19,13 @@ namespace logicAstroKPCharts
         {
             this.lblTitle = new System.Windows.Forms.Label();
             this.tlpRoot = new System.Windows.Forms.TableLayoutPanel();
-            this.panelChart = new System.Windows.Forms.Panel();
+            this.tlpLeft = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlLagna = new System.Windows.Forms.Panel();
+            this.lblLagnaHeader = new System.Windows.Forms.Label();
+            this.panelLagnaChart = new System.Windows.Forms.Panel();
+            this.pnlKp = new System.Windows.Forms.Panel();
+            this.lblKpHeader = new System.Windows.Forms.Label();
+            this.panelKpChart = new System.Windows.Forms.Panel();
             this.pnlCenter = new System.Windows.Forms.Panel();
             this.tlpCenter = new System.Windows.Forms.TableLayoutPanel();
             this.pnlCusps = new System.Windows.Forms.Panel();
@@ -41,6 +47,9 @@ namespace logicAstroKPCharts
             this.lblNadiHeader = new System.Windows.Forms.Label();
 
             this.tlpRoot.SuspendLayout();
+            this.tlpLeft.SuspendLayout();
+            this.pnlLagna.SuspendLayout();
+            this.pnlKp.SuspendLayout();
             this.pnlCenter.SuspendLayout();
             this.tlpCenter.SuspendLayout();
             this.pnlCusps.SuspendLayout();
@@ -76,7 +85,7 @@ namespace logicAstroKPCharts
             this.tlpRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tlpRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 37.5F));
             this.tlpRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 37.5F));
-            this.tlpRoot.Controls.Add(this.panelChart, 0, 0);
+            this.tlpRoot.Controls.Add(this.tlpLeft, 0, 0);
             this.tlpRoot.Controls.Add(this.pnlCenter, 1, 0);
             this.tlpRoot.Controls.Add(this.pnlRight, 2, 0);
             this.tlpRoot.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -87,16 +96,94 @@ namespace logicAstroKPCharts
             this.tlpRoot.Size = new System.Drawing.Size(1600, 860);
             this.tlpRoot.TabIndex = 1;
             //
-            // panelChart
+            // tlpLeft
             //
-            this.panelChart.BackColor = System.Drawing.Color.White;
-            this.panelChart.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelChart.Location = new System.Drawing.Point(6, 6);
-            this.panelChart.Margin = new System.Windows.Forms.Padding(6);
-            this.panelChart.Name = "panelChart";
-            this.panelChart.Size = new System.Drawing.Size(388, 848);
-            this.panelChart.TabIndex = 0;
+            this.tlpLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
+            this.tlpLeft.ColumnCount = 1;
+            this.tlpLeft.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpLeft.Controls.Add(this.pnlLagna, 0, 0);
+            this.tlpLeft.Controls.Add(this.pnlKp, 0, 1);
+            this.tlpLeft.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpLeft.Location = new System.Drawing.Point(6, 6);
+            this.tlpLeft.Margin = new System.Windows.Forms.Padding(6);
+            this.tlpLeft.Name = "tlpLeft";
+            this.tlpLeft.RowCount = 2;
+            this.tlpLeft.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpLeft.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpLeft.Size = new System.Drawing.Size(388, 848);
+            this.tlpLeft.TabIndex = 0;
+            //
+            // pnlLagna
+            //
+            this.pnlLagna.BackColor = System.Drawing.Color.White;
+            this.pnlLagna.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlLagna.Controls.Add(this.panelLagnaChart);
+            this.pnlLagna.Controls.Add(this.lblLagnaHeader);
+            this.pnlLagna.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlLagna.Location = new System.Drawing.Point(0, 0);
+            this.pnlLagna.Margin = new System.Windows.Forms.Padding(0, 0, 0, 6);
+            this.pnlLagna.Name = "pnlLagna";
+            this.pnlLagna.Size = new System.Drawing.Size(388, 418);
+            this.pnlLagna.TabIndex = 0;
+            //
+            // lblLagnaHeader
+            //
+            this.lblLagnaHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(140)))), ((int)(((byte)(8)))));
+            this.lblLagnaHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblLagnaHeader.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.lblLagnaHeader.ForeColor = System.Drawing.Color.White;
+            this.lblLagnaHeader.Location = new System.Drawing.Point(0, 0);
+            this.lblLagnaHeader.Name = "lblLagnaHeader";
+            this.lblLagnaHeader.Size = new System.Drawing.Size(386, 26);
+            this.lblLagnaHeader.TabIndex = 0;
+            this.lblLagnaHeader.Text = "LAGNA CHART";
+            this.lblLagnaHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            // panelLagnaChart
+            //
+            this.panelLagnaChart.BackColor = System.Drawing.Color.White;
+            this.panelLagnaChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelLagnaChart.Location = new System.Drawing.Point(0, 26);
+            this.panelLagnaChart.Margin = new System.Windows.Forms.Padding(4);
+            this.panelLagnaChart.Name = "panelLagnaChart";
+            this.panelLagnaChart.Size = new System.Drawing.Size(378, 388);
+            this.panelLagnaChart.TabIndex = 1;
+            //
+            // pnlKp
+            //
+            this.pnlKp.BackColor = System.Drawing.Color.White;
+            this.pnlKp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlKp.Controls.Add(this.panelKpChart);
+            this.pnlKp.Controls.Add(this.lblKpHeader);
+            this.pnlKp.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlKp.Location = new System.Drawing.Point(0, 424);
+            this.pnlKp.Margin = new System.Windows.Forms.Padding(0, 6, 0, 0);
+            this.pnlKp.Name = "pnlKp";
+            this.pnlKp.Size = new System.Drawing.Size(388, 418);
+            this.pnlKp.TabIndex = 1;
+            //
+            // lblKpHeader
+            //
+            this.lblKpHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(140)))), ((int)(((byte)(8)))));
+            this.lblKpHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblKpHeader.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.lblKpHeader.ForeColor = System.Drawing.Color.White;
+            this.lblKpHeader.Location = new System.Drawing.Point(0, 0);
+            this.lblKpHeader.Name = "lblKpHeader";
+            this.lblKpHeader.Size = new System.Drawing.Size(386, 26);
+            this.lblKpHeader.TabIndex = 0;
+            this.lblKpHeader.Text = "KP CHART";
+            this.lblKpHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            // panelKpChart
+            //
+            this.panelKpChart.BackColor = System.Drawing.Color.White;
+            this.panelKpChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelKpChart.Location = new System.Drawing.Point(0, 26);
+            this.panelKpChart.Margin = new System.Windows.Forms.Padding(4);
+            this.panelKpChart.Name = "panelKpChart";
+            this.panelKpChart.Size = new System.Drawing.Size(378, 388);
+            this.panelKpChart.TabIndex = 1;
             //
             // pnlCenter
             //
@@ -414,6 +501,9 @@ namespace logicAstroKPCharts
             this.Name = "ChartResultsUserControl";
             this.Size = new System.Drawing.Size(1600, 900);
             this.tlpRoot.ResumeLayout(false);
+            this.tlpLeft.ResumeLayout(false);
+            this.pnlLagna.ResumeLayout(false);
+            this.pnlKp.ResumeLayout(false);
             this.pnlCenter.ResumeLayout(false);
             this.tlpCenter.ResumeLayout(false);
             this.pnlCusps.ResumeLayout(false);
@@ -434,7 +524,13 @@ namespace logicAstroKPCharts
 
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.TableLayoutPanel tlpRoot;
-        private System.Windows.Forms.Panel panelChart;
+        private System.Windows.Forms.TableLayoutPanel tlpLeft;
+        private System.Windows.Forms.Panel pnlLagna;
+        private System.Windows.Forms.Label lblLagnaHeader;
+        private System.Windows.Forms.Panel panelLagnaChart;
+        private System.Windows.Forms.Panel pnlKp;
+        private System.Windows.Forms.Label lblKpHeader;
+        private System.Windows.Forms.Panel panelKpChart;
         private System.Windows.Forms.Panel pnlCenter;
         private System.Windows.Forms.TableLayoutPanel tlpCenter;
         private System.Windows.Forms.Panel pnlCusps;

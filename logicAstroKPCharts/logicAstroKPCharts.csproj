@@ -117,6 +117,7 @@
     <Compile Include="ChartResultsUserControl.Designer.cs">
       <DependentUpon>ChartResultsUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SouthIndianChartControl.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SoftwarePanelForm.cs">
       <SubType>Form</SubType>
