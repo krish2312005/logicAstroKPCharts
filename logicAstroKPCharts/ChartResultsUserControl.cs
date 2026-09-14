@@ -38,7 +38,10 @@ namespace logicAstroKPCharts
             m_chartData = chartData;
             if (m_chartData == null) return;
 
-            lblTitle.Text = string.Format("KP Astrology Chart - {0}, {1}", m_chartData.Name, m_chartData.Sex);
+            lblTitle.Text = string.Format("KP Astrology Chart - {0}, {1}\nDOB: {2}  |  Place: {3}  |  Long: {4}  |  Lat: {5}",
+                m_chartData.Name, m_chartData.Sex,
+                m_chartData.DateTimeOfBirth, m_chartData.PlaceOfBirth,
+                m_chartData.Longitude, m_chartData.Latitude);
 
             m_lagnaChart.SetChartData(BuildLagnaEntries(), FindLagnaSign());
             m_kpChart.SetChartData(BuildKpEntries(), FindLagnaSign());

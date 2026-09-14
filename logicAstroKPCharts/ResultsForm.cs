@@ -87,6 +87,8 @@ namespace logicAstroKPCharts
             if (m_chartData == null) return;
 
             lblTitle.Text = string.Format("KP Astrology Chart - {0}, {1}", m_chartData.Name, m_chartData.Sex);
+            lblDetails.Text = string.Format("DOB: {0}  |  Place: {1}  |  Long: {2}  |  Lat: {3}",
+                m_chartData.DateTimeOfBirth, m_chartData.PlaceOfBirth, m_chartData.Longitude, m_chartData.Latitude);
 
             DrawRasiChart();
             SetupPlanetTable();

@@ -69,11 +69,11 @@ namespace logicAstroKPCharts
             //
             this.lblTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.lblTitle.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 12.5F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
             this.lblTitle.Location = new System.Drawing.Point(0, 0);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(1600, 40);
+            this.lblTitle.Size = new System.Drawing.Size(1600, 48);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "KP Astrology Chart";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -89,11 +89,11 @@ namespace logicAstroKPCharts
             this.tlpRoot.Controls.Add(this.pnlCenter, 1, 0);
             this.tlpRoot.Controls.Add(this.pnlRight, 2, 0);
             this.tlpRoot.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpRoot.Location = new System.Drawing.Point(0, 40);
+            this.tlpRoot.Location = new System.Drawing.Point(0, 48);
             this.tlpRoot.Name = "tlpRoot";
             this.tlpRoot.RowCount = 1;
             this.tlpRoot.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpRoot.Size = new System.Drawing.Size(1600, 860);
+            this.tlpRoot.Size = new System.Drawing.Size(1600, 852);
             this.tlpRoot.TabIndex = 1;
             //
             // tlpLeft

@@ -19,6 +19,7 @@ namespace logicAstroKPCharts
         {
             this.pnlTop = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
+            this.lblDetails = new System.Windows.Forms.Label();
             this.btnPDF = new System.Windows.Forms.Button();
             this.btnFullScreen = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -57,6 +58,7 @@ namespace logicAstroKPCharts
             // pnlTop
             //
             this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.pnlTop.Controls.Add(this.lblDetails);
             this.pnlTop.Controls.Add(this.lblTitle);
             this.pnlTop.Controls.Add(this.btnPDF);
             this.pnlTop.Controls.Add(this.btnFullScreen);
@@ -64,19 +66,30 @@ namespace logicAstroKPCharts
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(1600, 45);
+            this.pnlTop.Size = new System.Drawing.Size(1600, 62);
             this.pnlTop.TabIndex = 0;
             //
             // lblTitle
             //
-            this.lblTitle.AutoSize = true;
+            this.lblTitle.AutoSize = false;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
-            this.lblTitle.Location = new System.Drawing.Point(12, 10);
+            this.lblTitle.Location = new System.Drawing.Point(12, 6);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(200, 25);
+            this.lblTitle.Size = new System.Drawing.Size(700, 25);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "KP Astrology Chart";
+            //
+            // lblDetails
+            //
+            this.lblDetails.AutoSize = true;
+            this.lblDetails.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
+            this.lblDetails.ForeColor = System.Drawing.Color.Black;
+            this.lblDetails.Location = new System.Drawing.Point(12, 35);
+            this.lblDetails.Name = "lblDetails";
+            this.lblDetails.Size = new System.Drawing.Size(200, 15);
+            this.lblDetails.TabIndex = 4;
+            this.lblDetails.Text = "";
             //
             // btnPDF
             //
@@ -123,7 +136,7 @@ namespace logicAstroKPCharts
             // splitAB
             //
             this.splitAB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitAB.Location = new System.Drawing.Point(0, 45);
+            this.splitAB.Location = new System.Drawing.Point(0, 62);
             this.splitAB.Name = "splitAB";
             //
             // splitAB.Panel1
@@ -133,7 +146,7 @@ namespace logicAstroKPCharts
             // splitAB.Panel2
             //
             this.splitAB.Panel2.Controls.Add(this.splitEF);
-            this.splitAB.Size = new System.Drawing.Size(1600, 805);
+            this.splitAB.Size = new System.Drawing.Size(1600, 788);
             this.splitAB.SplitterDistance = 800;
             //
             // splitCD
@@ -368,6 +381,7 @@ namespace logicAstroKPCharts
 
         private System.Windows.Forms.Panel pnlTop;
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblDetails;
         private System.Windows.Forms.Button btnPDF;
         private System.Windows.Forms.Button btnFullScreen;
         private System.Windows.Forms.Button btnClose;
