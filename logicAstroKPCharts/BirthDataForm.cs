@@ -69,6 +69,7 @@ namespace logicAstroKPCharts
         {
             m_bLoadChartOnShow = loadChartOnShow;
             InitializeComponent();
+            this.Icon = AppIcon.Logo;
 
             if (!InitApplication())
             {

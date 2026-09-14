@@ -47,6 +47,7 @@ namespace logicAstroKPCharts
         public WelcomeForm()
         {
             InitializeComponent();
+            this.Icon = AppIcon.Logo;
 
             try
             {

@@ -90,6 +90,7 @@ namespace logicAstroKPCharts
         public MainForm()
         {
             InitializeComponent();
+            this.Icon = AppIcon.Logo;
 
             if (!InitApplication())
             {

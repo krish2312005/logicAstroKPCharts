@@ -41,6 +41,7 @@ namespace logicAstroKPCharts
         public SoftwarePanelForm()
         {
             InitializeComponent();
+            this.Icon = AppIcon.Logo;
             InitPaths();
             LoadSettings();
         }

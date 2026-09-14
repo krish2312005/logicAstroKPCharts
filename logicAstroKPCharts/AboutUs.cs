@@ -43,6 +43,7 @@ namespace logicAstroKPCharts
         public AboutUs()
         {
             InitializeComponent();
+            this.Icon = AppIcon.Logo;
         }
     }
 }

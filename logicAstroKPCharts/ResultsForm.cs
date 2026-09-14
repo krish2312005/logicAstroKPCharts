@@ -18,6 +18,7 @@ namespace logicAstroKPCharts
         {
             InitializeComponent();
             m_chartData = chartData;
+            this.Icon = AppIcon.Logo;
 
             this.KeyPreview = true;
             this.KeyDown += ResultsForm_KeyDown;
