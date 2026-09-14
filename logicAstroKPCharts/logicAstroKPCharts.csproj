@@ -105,6 +105,12 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="BirthDataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BirthDataForm.Designer.cs">
+      <DependentUpon>BirthDataForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="SoftwarePanelForm.cs">
       <SubType>Form</SubType>
