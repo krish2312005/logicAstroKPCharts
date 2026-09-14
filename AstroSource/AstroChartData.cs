@@ -32,6 +32,10 @@ namespace srlWebCom.Astro.AstroObjects
         public string Planet = "";
         public string SubLord = "";
         public string SubWise = "";
+        public string D3 = "";
+        public string D4 = "";
+        public string D7 = "";
+        public string D8 = "";
     }
 
     public class DasaData

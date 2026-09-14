@@ -15,7 +15,7 @@ namespace logicAstroKPCharts
         private DateTime m_currentBirthTime;
         private bool m_btrActive;
         private Func<DateTime, AstroChartData> m_btrEngine;
-        private Dictionary<string, string> m_nadiSignifications;
+        private Dictionary<string, HouseSignificationData> m_nadiSignifications;
         private SouthIndianChartControl m_lagnaChart;
         private SouthIndianChartControl m_kpChart;
 
@@ -404,10 +404,12 @@ namespace logicAstroKPCharts
                 return "";
             }
 
-            string signification;
-            if (m_nadiSignifications.TryGetValue(strLord.Trim(), out signification))
+            HouseSignificationData hsd;
+            if (m_nadiSignifications.TryGetValue(strLord.Trim(), out hsd))
             {
-                return signification;
+                bool isNode = (strLord.Trim().Length == 2)
+                    && (strLord.Trim().ToUpperInvariant() == "RA" || strLord.Trim().ToUpperInvariant() == "KE");
+                return NadiCalculationService.ResolveNadiCoordinates(hsd.D3, hsd.D4, hsd.D7, hsd.D8, isNode);
             }
 
             return "";
@@ -438,13 +440,13 @@ namespace logicAstroKPCharts
                 col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
-            m_nadiSignifications = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            m_nadiSignifications = new Dictionary<string, HouseSignificationData>(StringComparer.OrdinalIgnoreCase);
             foreach (HouseSignificationData hsd in m_chartData.HouseSignificationList)
             {
                 string planet = (hsd.Planet ?? "").Replace("#", "").Replace("*", "").Trim();
                 if (planet.Length == 0) continue;
                 if (!m_nadiSignifications.ContainsKey(planet))
-                    m_nadiSignifications[planet] = hsd.StarWise;
+                    m_nadiSignifications[planet] = hsd;
             }
 
             foreach (PlanetData pd in m_chartData.PlanetList)

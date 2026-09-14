@@ -47,6 +47,7 @@ namespace NadiCalculationTests
             Run("Whole KP table validated against the mathematical model", TestTableValidation);
             Run("GetKPStarSubLords agrees with the model across all 12 signs", TestKPLookupVersusModel);
             Run("BuildNodeHouseSignifications has no stray commas", TestNodeSignifications);
+            Run("Nadi coordinates resolve occupied/owned houses for all 27 cells", TestNadiResolution);
 
             Console.WriteLine();
             Console.WriteLine("=========================================================");
@@ -568,6 +569,77 @@ private static bool TestKeSubSubSegments()
             {
                 Fail("empty result should be empty");
                 return false;
+            }
+
+            return true;
+        }
+
+        private class NadiLord
+        {
+            public string Name;
+            public string D3;
+            public string D4;
+            public string D7;
+            public string D8;
+            public bool IsNode;
+            public string Expected;
+        }
+
+        private static bool TestNadiResolution()
+        {
+            // Per-lord intermediate relationships for the reference chart.
+            // D3 = house the lord occupies, D4 = houses the lord owns, D7 = house
+            // the sign lord occupies, D8 = houses the sign lord owns (nodes use
+            // the sign lord's D7/D8 because the node owns no signs itself).
+            NadiLord[] lords = new NadiLord[]
+            {
+                new NadiLord { Name = "SU", D3 = "1", D4 = "9", Expected = "1 9" },
+                new NadiLord { Name = "MO", D3 = "6", D4 = "8", Expected = "6 8" },
+                new NadiLord { Name = "MA", D3 = "12", D4 = "5,12", Expected = "5 12" },
+                new NadiLord { Name = "RA", D3 = "4", D7 = "12", D8 = "5,12", IsNode = true, Expected = "4 5 12" },
+                new NadiLord { Name = "JU", D3 = "9", D4 = "1,4", Expected = "1 4 9" },
+                new NadiLord { Name = "SA", D3 = "7", D4 = "2,3", Expected = "2 3 7" },
+                new NadiLord { Name = "ME", D3 = "1", D4 = "7,10", Expected = "1 7 10" },
+                new NadiLord { Name = "KE", D3 = "10", D7 = "1", D8 = "6,11", IsNode = true, Expected = "1 6 10 11" },
+                new NadiLord { Name = "VE", D3 = "1", D4 = "6,11", Expected = "1 6 11" }
+            };
+
+            // Base planet, nakshatra lord and sub lord for each chart row.
+            string[][] rows = new string[][]
+            {
+                new string[] { "KE", "MA", "VE" },
+                new string[] { "VE", "VE", "SA" },
+                new string[] { "SU", "SU", "VE" },
+                new string[] { "MO", "RA", "ME" },
+                new string[] { "MA", "ME", "RA" },
+                new string[] { "RA", "KE", "SU" },
+                new string[] { "JU", "MA", "RA" },
+                new string[] { "SA", "JU", "SU" },
+                new string[] { "ME", "VE", "ME" }
+            };
+
+            for (int r = 0; r < rows.Length; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    string lord = rows[r][c];
+                    NadiLord nl = null;
+                    for (int i = 0; i < lords.Length; i++)
+                    {
+                        if (lords[i].Name == lord)
+                        {
+                            nl = lords[i];
+                            break;
+                        }
+                    }
+
+                    string actual = NadiCalculationService.ResolveNadiCoordinates(nl.D3, nl.D4, nl.D7, nl.D8, nl.IsNode);
+                    if (!string.Equals(actual, nl.Expected, StringComparison.Ordinal))
+                    {
+                        Fail(string.Format("{0} ({1}): resolved '{2}', expected '{3}'", lord, rows[r][0], actual, nl.Expected));
+                        return false;
+                    }
+                }
             }
 
             return true;

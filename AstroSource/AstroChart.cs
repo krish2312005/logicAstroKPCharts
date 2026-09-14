@@ -2431,6 +2431,10 @@ namespace srlWebCom.Astro.AstroObjects
                             strPlMarker = "*";
                         hsd.Planet = plObj.Name + strPlMarker;
                         hsd.SubLord = plObj.StarSubLord;
+                        hsd.D3 = plObj.D3;
+                        hsd.D4 = plObj.D4;
+                        hsd.D7 = plObj.D7;
+                        hsd.D8 = plObj.D8;
 
                         kpCommonObject plSubObj = GetFormattedKPAstroCommonObject(plObj.StarSubLord);
                         if (plSubObj != null)

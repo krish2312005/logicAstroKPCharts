@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace srlWebCom.Astro.AstroObjects
@@ -50,8 +51,10 @@ namespace srlWebCom.Astro.AstroObjects
     ///    a Sub-Sub Lord's length = (Sub Lord length / 120) x Sub-Sub Years.
     ///  - Vimshottari Dasa Years: KE=7, VE=20, SU=6, MO=10, MA=7, RA=18, JU=16, SA=19, ME=17.
     ///
-    /// The Nadi Coordinates table is no longer computed here: it displays the
-    /// house signification numbers that the chart already produces for each lord.
+    /// The Nadi Coordinates table is computed here: each lord's final Nadi
+    /// coordinates are resolved from the underlying house data the chart already
+    /// produces (planet's deposited house + houses it owns; for the nodes the
+    /// sign lord's deposited house + houses it owns).
     /// </summary>
     public static class NadiCalculationService
     {
@@ -376,6 +379,73 @@ namespace srlWebCom.Astro.AstroObjects
             }
 
             return result.ToString();
+        }
+
+        #endregion
+
+        #region Nadi Coordinate Resolution
+
+        /// <summary>
+        /// Resolves the final Nadi coordinates for a house-signification lord.
+        ///
+        /// Inputs are the intermediate house relationships the chart computes per
+        /// lord (see AstroChart.PrepareKPAstroTables):
+        ///   D3 - the house in which the lord is deposited (its own occupied house).
+        ///   D4 - the houses (signs) owned by that lord.
+        ///   D7 - the house in which the lord's sign lord is deposited.
+        ///   D8 - the houses (signs) owned by the lord's sign lord.
+        ///
+        /// A regular planet is a Nadi significator of the houses it occupies and
+        /// the houses it owns, so its coordinates are D3 + D4. A node (RA/KE)
+        /// owns no signs itself; it functions through its sign lord, whose own
+        /// coordinates are D7 + D8, so the node's coordinates are D3 + D7 + D8
+        /// (the house the node occupies together with its sign lord's houses).
+        ///
+        /// The values are collected as integers, de-duplicated and sorted
+        /// ascending. D./O. markers and parentheses never appear in the output;
+        /// the underlying house relationships are used directly rather than
+        /// stripping those prefixes out of a formatted signification string.
+        /// </summary>
+        public static string ResolveNadiCoordinates(string d3, string d4, string d7, string d8, bool isNode)
+        {
+            SortedSet<int> houses = new SortedSet<int>();
+
+            CollectHouses(d3, houses);
+            if (isNode)
+            {
+                CollectHouses(d7, houses);
+                CollectHouses(d8, houses);
+            }
+            else
+            {
+                CollectHouses(d4, houses);
+            }
+
+            return string.Join(" ", houses);
+        }
+
+        private static void CollectHouses(string strValue, SortedSet<int> houses)
+        {
+            if (string.IsNullOrEmpty(strValue))
+            {
+                return;
+            }
+
+            string[] strEntries = strValue.Split(',');
+            for (int i = 0; i < strEntries.Length; i++)
+            {
+                string strEntry = strEntries[i].Trim();
+                if (strEntry.Length == 0)
+                {
+                    continue;
+                }
+
+                int nHouse;
+                if (int.TryParse(strEntry, out nHouse) && nHouse >= 1 && nHouse <= 12)
+                {
+                    houses.Add(nHouse);
+                }
+            }
         }
 
         #endregion
