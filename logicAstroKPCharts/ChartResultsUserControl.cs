@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using srlWebCom.Astro.AstroObjects;
@@ -8,10 +9,36 @@ namespace logicAstroKPCharts
     public partial class ChartResultsUserControl : UserControl
     {
         private AstroChartData m_chartData;
+        private int m_lastChartWidth = 0;
+        private int m_lastChartHeight = 0;
 
         public ChartResultsUserControl()
         {
             InitializeComponent();
+            panelChart.Resize += panelChart_Resize;
+        }
+
+        private void panelChart_Resize(object sender, EventArgs e)
+        {
+            if (m_chartData == null) return;
+            if (Math.Abs(panelChart.Width - m_lastChartWidth) < 8 && Math.Abs(panelChart.Height - m_lastChartHeight) < 8) return;
+            DrawRasiChart();
+        }
+
+        private class InfoLine
+        {
+            public string Text;
+            public float FontSize;
+            public FontStyle Style;
+            public Color ForeColor;
+
+            public InfoLine(string text, float fontSize, FontStyle style, Color foreColor)
+            {
+                Text = text;
+                FontSize = fontSize;
+                Style = style;
+                ForeColor = foreColor;
+            }
         }
 
         public void LoadChartData(AstroChartData chartData)
@@ -31,6 +58,15 @@ namespace logicAstroKPCharts
 
         private void DrawRasiChart()
         {
+            if (m_chartData == null) return;
+
+            int chartW = panelChart.Width;
+            int chartH = panelChart.Height;
+            if (chartW <= 0 || chartH <= 0) return;
+
+            m_lastChartWidth = chartW;
+            m_lastChartHeight = chartH;
+
             panelChart.SuspendLayout();
             panelChart.Controls.Clear();
 
@@ -62,6 +98,9 @@ namespace logicAstroKPCharts
                 { 8, 7, 6, 5 }
             };
 
+            int cellW = chartW / 4;
+            int cellH = chartH / 4;
+
             for (int row = 0; row < 4; row++)
             {
                 for (int col = 0; col < 4; col++)
@@ -77,7 +116,7 @@ namespace logicAstroKPCharts
                             mergedPanel.Margin = new Padding(1);
                             mergedPanel.BorderStyle = BorderStyle.FixedSingle;
                             mergedPanel.BackColor = Color.FromArgb(255, 255, 245);
-                            DrawMergedInfo(mergedPanel);
+                            DrawMergedInfo(mergedPanel, cellW * 2, cellH * 2);
                             tlp.Controls.Add(mergedPanel, 1, 1);
                             tlp.SetColumnSpan(mergedPanel, 2);
                             tlp.SetRowSpan(mergedPanel, 2);
@@ -94,18 +133,25 @@ namespace logicAstroKPCharts
                     Label signLabel = new Label();
                     signLabel.Text = signNames[idx];
                     signLabel.Dock = DockStyle.Top;
-                    signLabel.Height = 18;
-                    signLabel.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
-                    signLabel.ForeColor = Color.FromArgb(100, 100, 100);
+                    signLabel.Height = 20;
+                    signLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+                    signLabel.ForeColor = Color.FromArgb(90, 90, 95);
                     signLabel.TextAlign = ContentAlignment.MiddleCenter;
                     signLabel.BackColor = Color.FromArgb(240, 248, 255);
+                    signLabel.Padding = new Padding(0);
                     cellPanel.Controls.Add(signLabel);
 
                     string rasiData = m_chartData.RasiDataArray[idx];
                     if (!string.IsNullOrEmpty(rasiData))
                     {
                         string[] entries = rasiData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                        float yPos = 20;
+                        int entryCount = entries.Length;
+                        int signHeaderH = 22;
+                        int availH = Math.Max(cellH - signHeaderH - 6, entryCount * 14);
+                        float step = entryCount > 0 ? (float)availH / entryCount : 0F;
+                        if (step > 20F) step = 20F;
+
+                        float yPos = signHeaderH + 2;
 
                         foreach (string entry in entries)
                         {
@@ -119,25 +165,30 @@ namespace logicAstroKPCharts
                                 if (isCusp)
                                     planetName = planetName.Substring(1);
 
+                                Font pFont = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+                                Font posFont = new Font("Segoe UI", 8F);
+
                                 Label planetLabel = new Label();
                                 planetLabel.AutoSize = true;
-                                planetLabel.Location = new Point(4, (int)yPos);
-                                planetLabel.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+                                planetLabel.Location = new Point(6, (int)yPos);
+                                planetLabel.Font = pFont;
                                 planetLabel.BackColor = Color.Transparent;
                                 planetLabel.ForeColor = isCusp ? Color.FromArgb(204, 0, 0) : Color.FromArgb(0, 0, 204);
                                 planetLabel.Text = planetName;
                                 cellPanel.Controls.Add(planetLabel);
 
                                 Label posLabel = new Label();
-                                posLabel.AutoSize = true;
-                                posLabel.Location = new Point(34, (int)yPos);
-                                posLabel.Font = new Font("Segoe UI", 8F);
-                                posLabel.ForeColor = Color.Black;
-                                posLabel.BackColor = Color.Transparent;
                                 posLabel.Text = position;
+                                posLabel.AutoSize = true;
+                                posLabel.Font = posFont;
+                                posLabel.ForeColor = Color.FromArgb(60, 60, 60);
+                                posLabel.BackColor = Color.Transparent;
+                                Size nameSize = TextRenderer.MeasureText(planetName, pFont);
+                                Size posSize = TextRenderer.MeasureText(position, posFont);
+                                posLabel.Location = new Point(Math.Max(6 + nameSize.Width + 8, cellW - posSize.Width - 6), (int)yPos);
                                 cellPanel.Controls.Add(posLabel);
 
-                                yPos += 16;
+                                yPos += step;
                             }
                         }
                     }
@@ -151,59 +202,56 @@ namespace logicAstroKPCharts
             panelChart.ResumeLayout(false);
         }
 
-        private void DrawMergedInfo(Panel p)
+        private void DrawMergedInfo(Panel p, int w, int h)
         {
-            float y = 5;
-            float leftCol = 5;
-            float rightCol = p.Width / 2 + 5;
-            Label lbl;
+            List<InfoLine> left = new List<InfoLine>();
+            left.Add(new InfoLine(m_chartData.Name + ", " + m_chartData.Sex, 9F, FontStyle.Bold, Color.FromArgb(0, 0, 153)));
+            left.Add(new InfoLine("DOB : " + m_chartData.DateTimeOfBirth, 8F, FontStyle.Regular, Color.Black));
+            left.Add(new InfoLine("Place : " + m_chartData.PlaceOfBirth, 8F, FontStyle.Regular, Color.Black));
+            left.Add(new InfoLine("Star : " + m_chartData.MoonStarInfo, 8F, FontStyle.Regular, Color.Black));
+            left.Add(new InfoLine("Dasa : " + m_chartData.DasaBalance, 8.5F, FontStyle.Bold, Color.Black));
 
-            lbl = MakeInfoLabel(m_chartData.Name + ", " + m_chartData.Sex, 8F, FontStyle.Bold, Color.FromArgb(0, 0, 153));
-            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y += 17;
+            List<InfoLine> right = new List<InfoLine>();
+            right.Add(new InfoLine("Long : " + m_chartData.Longitude, 8F, FontStyle.Regular, Color.Black));
+            right.Add(new InfoLine("Lat : " + m_chartData.Latitude, 8F, FontStyle.Regular, Color.Black));
+            right.Add(new InfoLine("Ayanamsa : " + m_chartData.Ayanamsa, 8F, FontStyle.Regular, Color.Black));
+            right.Add(new InfoLine("Sidereal : " + m_chartData.SiderealTime, 8F, FontStyle.Regular, Color.Black));
 
-            lbl = MakeInfoLabel("DOB: " + m_chartData.DateTimeOfBirth, 7.5F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y += 16;
+            float lineH = 19F;
 
-            lbl = MakeInfoLabel("Place: " + m_chartData.PlaceOfBirth, 7.5F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y += 16;
-
-            lbl = MakeInfoLabel("Star: " + m_chartData.MoonStarInfo, 7.5F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y += 16;
-
-            lbl = MakeInfoLabel("Dasa: " + m_chartData.DasaBalance, 7.5F, FontStyle.Bold, Color.Black);
-            lbl.Location = new Point((int)leftCol, (int)y); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y += 18;
-
-            float y2 = 5;
-            lbl = MakeInfoLabel("Long: " + m_chartData.Longitude, 7.5F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y2 += 16;
-
-            lbl = MakeInfoLabel("Lat: " + m_chartData.Latitude, 7.5F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y2 += 18;
-
-            lbl = MakeInfoLabel("Ayanamsa: " + m_chartData.Ayanamsa, 7F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
-            y2 += 16;
-
-            lbl = MakeInfoLabel("Sidereal: " + m_chartData.SiderealTime, 7F, FontStyle.Regular, Color.Black);
-            lbl.Location = new Point((int)rightCol, (int)y2); lbl.AutoSize = true; p.Controls.Add(lbl);
+            if (w >= 400)
+            {
+                int maxLines = Math.Max(left.Count, right.Count);
+                float totalH = maxLines * lineH + 10;
+                float y0 = Math.Max(6, (h - totalH) / 2);
+                DrawInfoColumn(p, left, 10, y0, lineH);
+                DrawInfoColumn(p, right, w * 0.5F + 8, y0, lineH);
+            }
+            else
+            {
+                List<InfoLine> all = new List<InfoLine>(left);
+                all.AddRange(right);
+                float totalH = all.Count * lineH + 10;
+                float y0 = Math.Max(4, (h - totalH) / 2);
+                DrawInfoColumn(p, all, 8, y0, lineH);
+            }
         }
 
-        private Label MakeInfoLabel(string text, float fontSize, FontStyle style, Color foreColor)
+        private void DrawInfoColumn(Panel p, List<InfoLine> lines, float x, float y0, float lineH)
         {
-            Label lbl = new Label();
-            lbl.Text = text;
-            lbl.AutoSize = true;
-            lbl.Font = new Font("Segoe UI", fontSize, style);
-            lbl.ForeColor = foreColor;
-            lbl.BackColor = Color.Transparent;
-            return lbl;
+            float y = y0;
+            foreach (InfoLine il in lines)
+            {
+                Label lbl = new Label();
+                lbl.Text = il.Text;
+                lbl.AutoSize = true;
+                lbl.Font = new Font("Segoe UI", il.FontSize, il.Style);
+                lbl.ForeColor = il.ForeColor;
+                lbl.BackColor = Color.Transparent;
+                lbl.Location = new Point((int)x, (int)y);
+                p.Controls.Add(lbl);
+                y += lineH;
+            }
         }
 
         private void DisableSorting(DataGridView dgv)
@@ -212,6 +260,13 @@ namespace logicAstroKPCharts
             {
                 col.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
+        }
+
+        private void ConfigureFillColumn(DataGridViewColumn col, float fillWeight, int minWidth)
+        {
+            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            col.FillWeight = fillWeight;
+            col.MinimumWidth = minWidth;
         }
 
         private void SetupPlanetTable()
@@ -223,11 +278,11 @@ namespace logicAstroKPCharts
             dgvPlanets.Columns.Add("SubLord", "Sub");
             dgvPlanets.Columns.Add("SSLord", "SS");
 
-            dgvPlanets.Columns[0].Width = 55;
-            dgvPlanets.Columns[1].Width = 40;
-            dgvPlanets.Columns[2].Width = 40;
-            dgvPlanets.Columns[3].Width = 40;
-            dgvPlanets.Columns[4].Width = 40;
+            ConfigureFillColumn(dgvPlanets.Columns[0], 2.4F, 62);
+            ConfigureFillColumn(dgvPlanets.Columns[1], 1F, 40);
+            ConfigureFillColumn(dgvPlanets.Columns[2], 1F, 40);
+            ConfigureFillColumn(dgvPlanets.Columns[3], 1F, 40);
+            ConfigureFillColumn(dgvPlanets.Columns[4], 1F, 40);
 
             foreach (DataGridViewColumn col in dgvPlanets.Columns)
             {
@@ -265,11 +320,11 @@ namespace logicAstroKPCharts
             dgvCusps.Columns.Add("SubLord", "Sub");
             dgvCusps.Columns.Add("SSLord", "SS");
 
-            dgvCusps.Columns[0].Width = 55;
-            dgvCusps.Columns[1].Width = 40;
-            dgvCusps.Columns[2].Width = 40;
-            dgvCusps.Columns[3].Width = 40;
-            dgvCusps.Columns[4].Width = 40;
+            ConfigureFillColumn(dgvCusps.Columns[0], 1.8F, 55);
+            ConfigureFillColumn(dgvCusps.Columns[1], 1F, 40);
+            ConfigureFillColumn(dgvCusps.Columns[2], 1F, 40);
+            ConfigureFillColumn(dgvCusps.Columns[3], 1F, 40);
+            ConfigureFillColumn(dgvCusps.Columns[4], 1F, 40);
 
             foreach (DataGridViewColumn col in dgvCusps.Columns)
             {
@@ -310,11 +365,11 @@ namespace logicAstroKPCharts
             dgvSignification.Columns.Add("SubLord", "Sub");
             dgvSignification.Columns.Add("SubWise", "Sub-Wise Significations");
 
-            dgvSignification.Columns[0].Width = 250;
-            dgvSignification.Columns[1].Width = 55;
-            dgvSignification.Columns[2].Width = 55;
-            dgvSignification.Columns[3].Width = 55;
-            dgvSignification.Columns[4].Width = 250;
+            ConfigureFillColumn(dgvSignification.Columns[0], 3.2F, 120);
+            ConfigureFillColumn(dgvSignification.Columns[1], 0.9F, 40);
+            ConfigureFillColumn(dgvSignification.Columns[2], 1.1F, 48);
+            ConfigureFillColumn(dgvSignification.Columns[3], 0.9F, 40);
+            ConfigureFillColumn(dgvSignification.Columns[4], 3.2F, 120);
 
             foreach (DataGridViewColumn col in dgvSignification.Columns)
             {
@@ -374,13 +429,13 @@ namespace logicAstroKPCharts
             dgvNadi.Columns.Add("SubLord", "Sub");
             dgvNadi.Columns.Add("SubNadi", "Sub Nadi");
 
-            dgvNadi.Columns[0].Width = 90;
-            dgvNadi.Columns[1].Width = 40;
-            dgvNadi.Columns[2].Width = 100;
-            dgvNadi.Columns[3].Width = 40;
-            dgvNadi.Columns[4].Width = 100;
-            dgvNadi.Columns[5].Width = 40;
-            dgvNadi.Columns[6].Width = 100;
+            ConfigureFillColumn(dgvNadi.Columns[0], 0.95F, 56);
+            ConfigureFillColumn(dgvNadi.Columns[1], 0.7F, 30);
+            ConfigureFillColumn(dgvNadi.Columns[2], 1.5F, 66);
+            ConfigureFillColumn(dgvNadi.Columns[3], 0.7F, 30);
+            ConfigureFillColumn(dgvNadi.Columns[4], 1.5F, 66);
+            ConfigureFillColumn(dgvNadi.Columns[5], 0.7F, 30);
+            ConfigureFillColumn(dgvNadi.Columns[6], 1.5F, 66);
 
             foreach (DataGridViewColumn col in dgvNadi.Columns)
             {
