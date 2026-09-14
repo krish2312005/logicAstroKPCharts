@@ -60,8 +60,10 @@ namespace logicAstroKPCharts
         private int m_nAyanamsa = 999;
         private string m_strHousingSystem = "P";
 
-        public event EventHandler OnPDFRequested;
         private bool m_bLoadChartOnShow = false;
+
+        public AstroChartData GeneratedChartData { get; private set; }
+        public string GeneratedAstroData { get; private set; }
 
         public BirthDataForm(bool loadChartOnShow = false)
         {
@@ -701,9 +703,10 @@ namespace logicAstroKPCharts
                     return;
                 }
 
-                ResultsForm resultsForm = new ResultsForm(chartData);
-                resultsForm.OnPDFRequested += ResultsForm_OnPDFRequested;
-                resultsForm.ShowDialog();
+                GeneratedChartData = chartData;
+                GeneratedAstroData = strAstroData;
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {

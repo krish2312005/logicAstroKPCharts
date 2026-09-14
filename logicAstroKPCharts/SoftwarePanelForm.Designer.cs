@@ -22,6 +22,9 @@ namespace logicAstroKPCharts
             this.menuEnterBirthData = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEditBirthData = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuExportPDF = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuClearChart = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +53,9 @@ namespace logicAstroKPCharts
             this.menuEnterBirthData,
             this.menuEditBirthData,
             this.toolStripSeparator1,
+            this.menuExportPDF,
+            this.menuClearChart,
+            this.toolStripSeparator2,
             this.menuExit});
             this.fileMenu.ForeColor = System.Drawing.Color.White;
             this.fileMenu.Name = "fileMenu";
@@ -62,7 +68,7 @@ namespace logicAstroKPCharts
             this.menuEnterBirthData.ForeColor = System.Drawing.Color.White;
             this.menuEnterBirthData.Name = "menuEnterBirthData";
             this.menuEnterBirthData.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.menuEnterBirthData.Size = new System.Drawing.Size(200, 22);
+            this.menuEnterBirthData.Size = new System.Drawing.Size(220, 22);
             this.menuEnterBirthData.Text = "&Enter Birth Data";
             this.menuEnterBirthData.Click += new System.EventHandler(this.menuEnterBirthData_Click);
             // 
@@ -72,7 +78,7 @@ namespace logicAstroKPCharts
             this.menuEditBirthData.ForeColor = System.Drawing.Color.White;
             this.menuEditBirthData.Name = "menuEditBirthData";
             this.menuEditBirthData.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.menuEditBirthData.Size = new System.Drawing.Size(200, 22);
+            this.menuEditBirthData.Size = new System.Drawing.Size(220, 22);
             this.menuEditBirthData.Text = "&Open Saved Chart";
             this.menuEditBirthData.Click += new System.EventHandler(this.menuEditBirthData_Click);
             // 
@@ -80,7 +86,34 @@ namespace logicAstroKPCharts
             // 
             this.toolStripSeparator1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(60)))), ((int)(((byte)(80)))));
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(197, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(217, 6);
+            // 
+            // menuExportPDF
+            // 
+            this.menuExportPDF.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(60)))), ((int)(((byte)(80)))));
+            this.menuExportPDF.Enabled = false;
+            this.menuExportPDF.ForeColor = System.Drawing.Color.White;
+            this.menuExportPDF.Name = "menuExportPDF";
+            this.menuExportPDF.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.menuExportPDF.Size = new System.Drawing.Size(220, 22);
+            this.menuExportPDF.Text = "&Export PDF";
+            this.menuExportPDF.Click += new System.EventHandler(this.menuExportPDF_Click);
+            // 
+            // menuClearChart
+            // 
+            this.menuClearChart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(60)))), ((int)(((byte)(80)))));
+            this.menuClearChart.ForeColor = System.Drawing.Color.White;
+            this.menuClearChart.Name = "menuClearChart";
+            this.menuClearChart.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.menuClearChart.Size = new System.Drawing.Size(220, 22);
+            this.menuClearChart.Text = "&Clear Chart";
+            this.menuClearChart.Click += new System.EventHandler(this.menuClearChart_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(60)))), ((int)(((byte)(80)))));
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(217, 6);
             // 
             // menuExit
             // 
@@ -88,7 +121,7 @@ namespace logicAstroKPCharts
             this.menuExit.ForeColor = System.Drawing.Color.OrangeRed;
             this.menuExit.Name = "menuExit";
             this.menuExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.menuExit.Size = new System.Drawing.Size(200, 22);
+            this.menuExit.Size = new System.Drawing.Size(220, 22);
             this.menuExit.Text = "E&xit";
             this.menuExit.Click += new System.EventHandler(this.menuExit_Click);
             // 
@@ -165,6 +198,9 @@ namespace logicAstroKPCharts
         private System.Windows.Forms.ToolStripMenuItem menuEnterBirthData;
         private System.Windows.Forms.ToolStripMenuItem menuEditBirthData;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem menuExportPDF;
+        private System.Windows.Forms.ToolStripMenuItem menuClearChart;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem menuExit;
         private System.Windows.Forms.ToolStripMenuItem viewMenu;
         private System.Windows.Forms.ToolStripMenuItem menuSettings;
