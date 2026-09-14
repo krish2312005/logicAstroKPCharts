@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "logicAstroKPCharts", "logicAstroKPCharts\logicAstroKPCharts.csproj", "{D2B415D6-2164-4E23-8368-45A4F2AAC36B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadiCalculationTests", "NadiCalculationTests\NadiCalculationTests.csproj", "{C9E1F2A1-4B7E-4D3A-9A2F-1C2B3D4E5F60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D2B415D6-2164-4E23-8368-45A4F2AAC36B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2B415D6-2164-4E23-8368-45A4F2AAC36B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2B415D6-2164-4E23-8368-45A4F2AAC36B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9E1F2A1-4B7E-4D3A-9A2F-1C2B3D4E5F60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9E1F2A1-4B7E-4D3A-9A2F-1C2B3D4E5F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9E1F2A1-4B7E-4D3A-9A2F-1C2B3D4E5F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9E1F2A1-4B7E-4D3A-9A2F-1C2B3D4E5F60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

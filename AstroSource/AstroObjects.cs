@@ -836,6 +836,10 @@ namespace srlWebCom.Astro.AstroObjects
         public astroPosition FromPos = new astroPosition();
         public astroPosition ToPos = new astroPosition();
 
+        /// <summary>Exact range boundaries in sixtieths of an arc second (full four-field precision).</summary>
+        public long FromPosSixtieths = 0;
+        public long ToPosSixtieths = 0;
+
         public void Clear()
         {
             Horay = "";
@@ -843,6 +847,8 @@ namespace srlWebCom.Astro.AstroObjects
             Lords = "";
             FromPos.Clear();
             ToPos.Clear();
+            FromPosSixtieths = 0;
+            ToPosSixtieths = 0;
         }
     }
 
@@ -913,6 +919,9 @@ namespace srlWebCom.Astro.AstroObjects
                     strPosition = KPElements[4].Replace(":", ".").Substring(0, 8);
                     KPSObj.ToPos.Set(strPosition);
 
+                    KPSObj.FromPosSixtieths = NadiCalculationService.ParsePositionToSixtieths(KPElements[3]);
+                    KPSObj.ToPosSixtieths = NadiCalculationService.ParsePositionToSixtieths(KPElements[4]);
+
                     KPStarTable.Add(KPSObj);
                 }
 
@@ -938,11 +947,13 @@ namespace srlWebCom.Astro.AstroObjects
             {
                 strShortSign = strSign.Substring(0, 3);
 
+                long posSixtieths = (long)asPos.TotalSeconds * 60;
+
                 foreach (kpStarObject KPObj in KPStarTable)
                 {
-                    if (KPObj.Sign.IndexOf(strShortSign) != -1)
+                    if (NadiCalculationService.SignGroupContains(KPObj.Sign, strShortSign))
                     {
-                        if (asPos.TotalSeconds >= KPObj.FromPos.TotalSeconds && asPos.TotalSeconds < KPObj.ToPos.TotalSeconds)
+                        if (posSixtieths >= KPObj.FromPosSixtieths && posSixtieths < KPObj.ToPosSixtieths)
                         {
                             strLords = string.Format("{0}", KPObj.Lords);
 
@@ -987,11 +998,13 @@ namespace srlWebCom.Astro.AstroObjects
             {
                 strShortSign = strSign.Substring(0, 3);
 
+                long posSixtieths = (long)asPos.TotalSeconds * 60;
+
                 foreach (kpStarObject KPObj in KPStarTable)
                 {
-                    if (KPObj.Sign.IndexOf(strShortSign) != -1)
+                    if (NadiCalculationService.SignGroupContains(KPObj.Sign, strShortSign))
                     {
-                        if (asPos.TotalSeconds >= KPObj.FromPos.TotalSeconds && asPos.TotalSeconds < KPObj.ToPos.TotalSeconds)
+                        if (posSixtieths >= KPObj.FromPosSixtieths && posSixtieths < KPObj.ToPosSixtieths)
                         {
                             strLordsRange = string.Format("{0} - {1}", KPObj.FromPos.Value, KPObj.ToPos.Value);
                             break;

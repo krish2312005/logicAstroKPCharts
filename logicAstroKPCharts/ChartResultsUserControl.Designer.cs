@@ -17,7 +17,18 @@ namespace logicAstroKPCharts
 
         private void InitializeComponent()
         {
+            this.pnlHeader = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
+            this.lblDetails = new System.Windows.Forms.Label();
+            this.lblBtrInfo = new System.Windows.Forms.Label();
+            this.pnlBtrButtons = new System.Windows.Forms.Panel();
+            this.btnBTRMinusDay = new System.Windows.Forms.Button();
+            this.btnBTRMinusHour = new System.Windows.Forms.Button();
+            this.btnBTRMinusMin = new System.Windows.Forms.Button();
+            this.btnBTRReset = new System.Windows.Forms.Button();
+            this.btnBTRPlusMin = new System.Windows.Forms.Button();
+            this.btnBTRPlusHour = new System.Windows.Forms.Button();
+            this.btnBTRPlusDay = new System.Windows.Forms.Button();
             this.tlpRoot = new System.Windows.Forms.TableLayoutPanel();
             this.tlpLeft = new System.Windows.Forms.TableLayoutPanel();
             this.pnlLagna = new System.Windows.Forms.Panel();
@@ -46,6 +57,8 @@ namespace logicAstroKPCharts
             this.dgvNadi = new System.Windows.Forms.DataGridView();
             this.lblNadiHeader = new System.Windows.Forms.Label();
 
+            this.pnlHeader.SuspendLayout();
+            this.pnlBtrButtons.SuspendLayout();
             this.tlpRoot.SuspendLayout();
             this.tlpLeft.SuspendLayout();
             this.pnlLagna.SuspendLayout();
@@ -65,18 +78,151 @@ namespace logicAstroKPCharts
             ((System.ComponentModel.ISupportInitialize)(this.dgvNadi)).BeginInit();
             this.SuspendLayout();
             //
+            // pnlHeader
+            //
+            this.pnlHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.pnlHeader.Controls.Add(this.lblBtrInfo);
+            this.pnlHeader.Controls.Add(this.lblDetails);
+            this.pnlHeader.Controls.Add(this.lblTitle);
+            this.pnlHeader.Controls.Add(this.pnlBtrButtons);
+            this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlHeader.Location = new System.Drawing.Point(0, 0);
+            this.pnlHeader.Name = "pnlHeader";
+            this.pnlHeader.Size = new System.Drawing.Size(1600, 56);
+            this.pnlHeader.TabIndex = 0;
+            //
             // lblTitle
             //
-            this.lblTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.lblTitle.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.AutoSize = false;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 12.5F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
-            this.lblTitle.Location = new System.Drawing.Point(0, 0);
+            this.lblTitle.Location = new System.Drawing.Point(12, 4);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(1600, 48);
+            this.lblTitle.Size = new System.Drawing.Size(850, 24);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "KP Astrology Chart";
-            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // lblDetails
+            //
+            this.lblDetails.AutoSize = true;
+            this.lblDetails.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
+            this.lblDetails.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblDetails.Location = new System.Drawing.Point(12, 32);
+            this.lblDetails.Name = "lblDetails";
+            this.lblDetails.TabIndex = 1;
+            this.lblDetails.Text = "DOB: ";
+            //
+            // lblBtrInfo
+            //
+            this.lblBtrInfo.AutoSize = true;
+            this.lblBtrInfo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblBtrInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.lblBtrInfo.Location = new System.Drawing.Point(300, 32);
+            this.lblBtrInfo.Name = "lblBtrInfo";
+            this.lblBtrInfo.TabIndex = 4;
+            this.lblBtrInfo.Text = "";
+            this.lblBtrInfo.Visible = false;
+            //
+            // pnlBtrButtons
+            //
+            this.pnlBtrButtons.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlBtrButtons.Controls.Add(this.btnBTRPlusDay);
+            this.pnlBtrButtons.Controls.Add(this.btnBTRPlusHour);
+            this.pnlBtrButtons.Controls.Add(this.btnBTRPlusMin);
+            this.pnlBtrButtons.Controls.Add(this.btnBTRReset);
+            this.pnlBtrButtons.Controls.Add(this.btnBTRMinusMin);
+            this.pnlBtrButtons.Controls.Add(this.btnBTRMinusHour);
+            this.pnlBtrButtons.Controls.Add(this.btnBTRMinusDay);
+            this.pnlBtrButtons.Location = new System.Drawing.Point(1252, 6);
+            this.pnlBtrButtons.Name = "pnlBtrButtons";
+            this.pnlBtrButtons.Size = new System.Drawing.Size(340, 44);
+            this.pnlBtrButtons.TabIndex = 5;
+            //
+            // btnBTRMinusDay
+            //
+            this.btnBTRMinusDay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBTRMinusDay.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnBTRMinusDay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
+            this.btnBTRMinusDay.Location = new System.Drawing.Point(0, 4);
+            this.btnBTRMinusDay.Name = "btnBTRMinusDay";
+            this.btnBTRMinusDay.Size = new System.Drawing.Size(48, 28);
+            this.btnBTRMinusDay.TabIndex = 7;
+            this.btnBTRMinusDay.Text = "-1D";
+            this.btnBTRMinusDay.UseVisualStyleBackColor = true;
+            //
+            // btnBTRMinusHour
+            //
+            this.btnBTRMinusHour.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBTRMinusHour.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnBTRMinusHour.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
+            this.btnBTRMinusHour.Location = new System.Drawing.Point(50, 4);
+            this.btnBTRMinusHour.Name = "btnBTRMinusHour";
+            this.btnBTRMinusHour.Size = new System.Drawing.Size(48, 28);
+            this.btnBTRMinusHour.TabIndex = 8;
+            this.btnBTRMinusHour.Text = "-1H";
+            this.btnBTRMinusHour.UseVisualStyleBackColor = true;
+            //
+            // btnBTRMinusMin
+            //
+            this.btnBTRMinusMin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBTRMinusMin.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnBTRMinusMin.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
+            this.btnBTRMinusMin.Location = new System.Drawing.Point(100, 4);
+            this.btnBTRMinusMin.Name = "btnBTRMinusMin";
+            this.btnBTRMinusMin.Size = new System.Drawing.Size(48, 28);
+            this.btnBTRMinusMin.TabIndex = 9;
+            this.btnBTRMinusMin.Text = "-1m";
+            this.btnBTRMinusMin.UseVisualStyleBackColor = true;
+            //
+            // btnBTRReset
+            //
+            this.btnBTRReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBTRReset.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnBTRReset.ForeColor = System.Drawing.Color.White;
+            this.btnBTRReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(140)))), ((int)(((byte)(8)))));
+            this.btnBTRReset.Location = new System.Drawing.Point(150, 4);
+            this.btnBTRReset.Name = "btnBTRReset";
+            this.btnBTRReset.Size = new System.Drawing.Size(56, 28);
+            this.btnBTRReset.TabIndex = 10;
+            this.btnBTRReset.Text = "Reset";
+            this.btnBTRReset.UseVisualStyleBackColor = false;
+            //
+            // btnBTRPlusMin
+            //
+            this.btnBTRPlusMin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBTRPlusMin.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnBTRPlusMin.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
+            this.btnBTRPlusMin.Location = new System.Drawing.Point(208, 4);
+            this.btnBTRPlusMin.Name = "btnBTRPlusMin";
+            this.btnBTRPlusMin.Size = new System.Drawing.Size(48, 28);
+            this.btnBTRPlusMin.TabIndex = 11;
+            this.btnBTRPlusMin.Text = "+1m";
+            this.btnBTRPlusMin.UseVisualStyleBackColor = true;
+            //
+            // btnBTRPlusHour
+            //
+            this.btnBTRPlusHour.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBTRPlusHour.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnBTRPlusHour.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
+            this.btnBTRPlusHour.Location = new System.Drawing.Point(258, 4);
+            this.btnBTRPlusHour.Name = "btnBTRPlusHour";
+            this.btnBTRPlusHour.Size = new System.Drawing.Size(48, 28);
+            this.btnBTRPlusHour.TabIndex = 12;
+            this.btnBTRPlusHour.Text = "+1H";
+            this.btnBTRPlusHour.UseVisualStyleBackColor = true;
+            //
+            // btnBTRPlusDay
+            //
+            this.btnBTRPlusDay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBTRPlusDay.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnBTRPlusDay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(153)))));
+            this.btnBTRPlusDay.Location = new System.Drawing.Point(308, 4);
+            this.btnBTRPlusDay.Name = "btnBTRPlusDay";
+            this.btnBTRPlusDay.Size = new System.Drawing.Size(48, 28);
+            this.btnBTRPlusDay.TabIndex = 13;
+            this.btnBTRPlusDay.Text = "+1D";
+            this.btnBTRPlusDay.UseVisualStyleBackColor = true;
             //
             // tlpRoot
             //
@@ -89,11 +235,11 @@ namespace logicAstroKPCharts
             this.tlpRoot.Controls.Add(this.pnlCenter, 1, 0);
             this.tlpRoot.Controls.Add(this.pnlRight, 2, 0);
             this.tlpRoot.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpRoot.Location = new System.Drawing.Point(0, 48);
+            this.tlpRoot.Location = new System.Drawing.Point(0, 56);
             this.tlpRoot.Name = "tlpRoot";
             this.tlpRoot.RowCount = 1;
             this.tlpRoot.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpRoot.Size = new System.Drawing.Size(1600, 852);
+            this.tlpRoot.Size = new System.Drawing.Size(1600, 844);
             this.tlpRoot.TabIndex = 1;
             //
             // tlpLeft
@@ -496,10 +642,13 @@ namespace logicAstroKPCharts
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this.Controls.Add(this.tlpRoot);
-            this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.pnlHeader);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ChartResultsUserControl";
             this.Size = new System.Drawing.Size(1600, 900);
+            this.pnlHeader.ResumeLayout(false);
+            this.pnlHeader.PerformLayout();
+            this.pnlBtrButtons.ResumeLayout(false);
             this.tlpRoot.ResumeLayout(false);
             this.tlpLeft.ResumeLayout(false);
             this.pnlLagna.ResumeLayout(false);
@@ -522,7 +671,18 @@ namespace logicAstroKPCharts
 
         #endregion
 
+        private System.Windows.Forms.Panel pnlHeader;
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblDetails;
+        private System.Windows.Forms.Label lblBtrInfo;
+        private System.Windows.Forms.Panel pnlBtrButtons;
+        private System.Windows.Forms.Button btnBTRMinusDay;
+        private System.Windows.Forms.Button btnBTRMinusHour;
+        private System.Windows.Forms.Button btnBTRMinusMin;
+        private System.Windows.Forms.Button btnBTRReset;
+        private System.Windows.Forms.Button btnBTRPlusMin;
+        private System.Windows.Forms.Button btnBTRPlusHour;
+        private System.Windows.Forms.Button btnBTRPlusDay;
         private System.Windows.Forms.TableLayoutPanel tlpRoot;
         private System.Windows.Forms.TableLayoutPanel tlpLeft;
         private System.Windows.Forms.Panel pnlLagna;
