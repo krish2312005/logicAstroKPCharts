@@ -394,31 +394,14 @@ namespace logicAstroKPCharts
                 if (!string.IsNullOrEmpty(pd.Strength))
                     displayName = pd.Name + pd.Strength;
 
-                int rowIdx = dgvNadi.Rows.Add(displayName, pd.SignLord, GetNadiCoordinates(pd.SignLord),
+                int rowIdx = dgvNadi.Rows.Add(displayName, pd.Name, GetNadiCoordinates(pd.Name),
                     pd.StarLord, GetNadiCoordinates(pd.StarLord), pd.SubLord, GetNadiCoordinates(pd.SubLord));
                 DataGridViewRow row = dgvNadi.Rows[rowIdx];
 
                 row.Cells[0].Style.ForeColor = Color.FromArgb(0, 0, 204);
                 row.Cells[0].Style.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-                row.Cells[2].Style.BackColor = Color.FromArgb(240, 233, 216);
-                row.Cells[4].Style.BackColor = Color.FromArgb(240, 248, 255);
-                row.Cells[6].Style.BackColor = Color.FromArgb(240, 233, 216);
-            }
-
-            int sepIdx = dgvNadi.Rows.Add();
-            dgvNadi.Rows[sepIdx].Height = 6;
-            dgvNadi.Rows[sepIdx].DefaultCellStyle.BackColor = Color.FromArgb(221, 140, 8);
-
-            foreach (CuspData cd in m_chartData.CuspList)
-            {
-                string cuspDisplay = ConvertToRomanLetters(cd.HouseNo.ToString());
-
-                int rowIdx = dgvNadi.Rows.Add(cuspDisplay, cd.SignLord, GetNadiCoordinates(cd.SignLord),
-                    cd.StarLord, GetNadiCoordinates(cd.StarLord), cd.SubLord, GetNadiCoordinates(cd.SubLord));
-                DataGridViewRow row = dgvNadi.Rows[rowIdx];
-
-                row.Cells[0].Style.ForeColor = Color.FromArgb(204, 0, 0);
-                row.Cells[0].Style.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                row.Cells[1].Style.ForeColor = Color.FromArgb(246, 4, 4);
+                row.Cells[1].Style.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
                 row.Cells[2].Style.BackColor = Color.FromArgb(240, 233, 216);
                 row.Cells[4].Style.BackColor = Color.FromArgb(240, 248, 255);
                 row.Cells[6].Style.BackColor = Color.FromArgb(240, 233, 216);
