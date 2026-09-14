@@ -39,16 +39,17 @@ namespace logicAstroKPCharts
             "Dhanusu", "Makaram", "Kumbam", "Meenam"
         };
 
-        // Fixed South Indian sign arrangement (top row left-to-right):
-        // Kumbam | Meenam | Mesham | Rishabam
-        // Dhanusu . center . Mithunam
-        // Makaram . center . Katakam
-        // Simham | Kanni | Thulam | Viruchikam
-        private static readonly int[,] m_cellMap = {
-            { 10, 11, 0, 1 },
-            {  8, -1, -1, 2 },
-            {  9, -1, -1, 3 },
-            {  4,  5,  6,  7 }
+        // South Indian house template (0 = empty centre cells):
+        // the LAGNA house is always the bottom-left cell; houses then run
+        // 1,2,3... from bottom-left, up the left column, right across the top,
+        // down the right column and left along the bottom.
+        // The zodiac sign shown in a cell is derived from the Lagna sign using
+        // that house number, so the whole wheel rotates with the ascendant.
+        private static readonly int[,] m_houseMap = {
+            {  4,  5,  6,  7 },
+            {  3,  0,  0,  8 },
+            {  2,  0,  0,  9 },
+            {  1, 12, 11, 10 }
         };
 
         private static readonly Color PlanetColor = Color.FromArgb(0, 0, 204);
@@ -102,11 +103,15 @@ namespace logicAstroKPCharts
                     {
                         for (int col = 0; col < 4; col++)
                         {
-                            int idx = m_cellMap[row, col];
+                            int house = m_houseMap[row, col];
 
                             int w = cell + (col == 3 ? rem : 0);
                             int h = cell + (row == 3 ? rem : 0);
                             Rectangle rect = new Rectangle(ox + col * cell, oy + row * cell, w, h);
+
+                            int idx = -1;
+                            if (house > 0)
+                                idx = (Math.Max(LagnaSignIndex, 0) + house - 1) % 12;
 
                             bool isLagna = (idx == LagnaSignIndex && ChartType == SouthIndianChartType.Lagna);
 

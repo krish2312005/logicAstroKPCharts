@@ -41,7 +41,7 @@ namespace logicAstroKPCharts
             lblTitle.Text = string.Format("KP Astrology Chart - {0}, {1}", m_chartData.Name, m_chartData.Sex);
 
             m_lagnaChart.SetChartData(BuildLagnaEntries(), FindLagnaSign());
-            m_kpChart.SetChartData(BuildKpEntries(), -1);
+            m_kpChart.SetChartData(BuildKpEntries(), FindLagnaSign());
 
             SetupPlanetTable();
             SetupCuspTable();
