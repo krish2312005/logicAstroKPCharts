@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using srlWebCom.Astro.AstroObjects;
 
 namespace NadiCalculationTests
@@ -48,6 +49,14 @@ namespace NadiCalculationTests
             Run("GetKPStarSubLords agrees with the model across all 12 signs", TestKPLookupVersusModel);
             Run("BuildNodeHouseSignifications has no stray commas", TestNodeSignifications);
             Run("Nadi coordinates resolve occupied/owned houses for all 27 cells", TestNadiResolution);
+            Run("Hidden houses: SPEC example SUN -> [4]", TestHiddenHouseSpecExamples);
+            Run("Hidden houses: reference chart final hidden houses sorted", TestHiddenHouseBasicChart);
+            Run("Hidden houses: node RA/KE use D3+D7+D8 as existing", TestHiddenHouseNodes);
+            Run("Hidden houses: edge cases (duplicates, empty STL, all-consumed)", TestHiddenHouseEdgeCases);
+            Run("Hidden houses: deduplication and existing-signification removal", TestHiddenHouseDedupExisting);
+            Run("Hidden houses: formatting helpers", TestHiddenHouseFormatting);
+            Run("Hidden houses: chart-level results shared by both tables", TestHiddenHouseChartShared);
+            Run("Hidden houses: changing chart data changes results", TestHiddenHouseDynamic);
 
             Console.WriteLine();
             Console.WriteLine("=========================================================");
@@ -644,5 +653,461 @@ private static bool TestKeSubSubSegments()
 
             return true;
         }
+
+        #region Hidden House Tests
+
+        private class HiddenLord
+        {
+            public string Name;
+            public string D3;
+            public string D4;
+            public string D7;
+            public string D8;
+            public bool IsNode;
+        }
+
+        // Reference chart used by TestNadiResolution above. D3 = house occupied,
+        // D4 = houses owned, D7/D8 = sign lord occupied/owned (nodes only).
+        private static readonly HiddenLord[] ReferenceLords = new HiddenLord[]
+        {
+            new HiddenLord { Name = "SU", D3 = "1",  D4 = "9",       D7 = "",  D8 = "" },
+            new HiddenLord { Name = "MO", D3 = "6",  D4 = "8",       D7 = "",  D8 = "" },
+            new HiddenLord { Name = "MA", D3 = "12", D4 = "5,12",    D7 = "",  D8 = "" },
+            new HiddenLord { Name = "RA", D3 = "4",  D4 = "",        D7 = "12", D8 = "5,12", IsNode = true },
+            new HiddenLord { Name = "JU", D3 = "9",  D4 = "1,4",     D7 = "",  D8 = "" },
+            new HiddenLord { Name = "SA", D3 = "7",  D4 = "2,3",     D7 = "",  D8 = "" },
+            new HiddenLord { Name = "ME", D3 = "1",  D4 = "7,10",    D7 = "",  D8 = "" },
+            new HiddenLord { Name = "KE", D3 = "10", D4 = "",        D7 = "1", D8 = "6,11", IsNode = true },
+            new HiddenLord { Name = "VE", D3 = "1",  D4 = "6,11",    D7 = "",  D8 = "" }
+        };
+
+        // Owned houses per planet, byte-identical to each lord's D4. A cusp's
+        // in the chart owns the same signs; listed so the synthetic cusp rule set
+        // below stays consistent with the reference chart.
+        private static readonly string[] ReferenceSignLords = new string[]
+        { "JU", "SA", "SA", "JU", "MA", "VE", "ME", "MO", "SU", "ME", "VE", "MA" };
+
+        // Star Lord and Sub Lord chosen for each of the 12 house cusps of the
+        // reference chart. They are fixed test inputs (the reference chart record
+        // does not carry cusp lords) and are intentionally varied to exercise every
+        // priority category of the hidden house algorithm.
+        private static readonly string[] ReferenceCuspStarLords = new string[]
+        { "SU", "MO", "JU", "MA", "ME", "VE", "SA", "KE", "SU", "RA", "SA", "JU" };
+
+        private static readonly string[] ReferenceCuspSubLords = new string[]
+        { "MA", "VE", "ME", "RA", "SU", "JU", "MO", "ME", "MA", "JU", "KE", "VE" };
+
+        private static List<CuspData> BuildReferenceCusps()
+        {
+            List<CuspData> list = new List<CuspData>();
+            for (int i = 0; i < 12; i++)
+            {
+                CuspData cd = new CuspData();
+                cd.HouseNo = i + 1;
+                cd.SignLord = ReferenceSignLords[i];
+                cd.StarLord = ReferenceCuspStarLords[i];
+                cd.SubLord = ReferenceCuspSubLords[i];
+                list.Add(cd);
+            }
+            return list;
+        }
+
+        private static AstroChartData BuildReferenceChartData()
+        {
+            AstroChartData chart = new AstroChartData();
+            chart.CuspList = BuildReferenceCusps();
+
+            for (int i = 1; i <= 12; i++)
+            {
+                HouseSignificationData hsd = new HouseSignificationData();
+                hsd.Planet = i.ToString();
+                chart.HouseSignificationList.Add(hsd);
+            }
+
+            chart.PlanetList.Clear();
+            for (int i = 0; i < ReferenceLords.Length; i++)
+            {
+                HiddenLord hl = ReferenceLords[i];
+                chart.PlanetList.Add(new PlanetData { Name = hl.Name });
+
+                HouseSignificationData hsd = new HouseSignificationData();
+                hsd.Planet = hl.Name;
+                hsd.D3 = hl.D3;
+                hsd.D4 = hl.D4;
+                hsd.D7 = hl.D7;
+                hsd.D8 = hl.D8;
+                chart.HouseSignificationList.Add(hsd);
+            }
+
+            return chart;
+        }
+
+        private static HiddenHouseResult ComputeHiddenFor(string strPlanet, AstroChartData chart)
+        {
+            HouseSignificationData hsd = null;
+            for (int i = 0; i < chart.HouseSignificationList.Count; i++)
+            {
+                if (chart.HouseSignificationList[i].Planet == strPlanet)
+                {
+                    hsd = chart.HouseSignificationList[i];
+                    break;
+                }
+            }
+
+            bool isNode = HiddenHouseService.IsNode(strPlanet);
+            return HiddenHouseService.ComputeForPlanet(
+                strPlanet, hsd.D3, hsd.D4, hsd.D7, hsd.D8, isNode, chart.CuspList);
+        }
+
+        private static string Join(List<int> houses)
+        {
+            return HiddenHouseService.FormatHouseList(houses);
+        }
+
+        private static string JoinRange(ICollection<int> houses)
+        {
+            return Join(new List<int>(houses));
+        }
+
+        private static HashSet<int> HouseSet(params int[] houses)
+        {
+            HashSet<int> set = new HashSet<int>();
+            for (int i = 0; i < houses.Length; i++)
+                set.Add(houses[i]);
+            return set;
+        }
+
+        private static List<int> HouseList(params int[] houses)
+        {
+            List<int> list = new List<int>();
+            for (int i = 0; i < houses.Length; i++)
+                list.Add(houses[i]);
+            return list;
+        }
+
+        private static HashSet<int> ExistingNadiSet(string name)
+        {
+            AstroChartData chart = BuildReferenceChartData();
+            HouseSignificationData hsd = null;
+            for (int i = 0; i < chart.HouseSignificationList.Count; i++)
+            {
+                if (chart.HouseSignificationList[i].Planet == name)
+                {
+                    hsd = chart.HouseSignificationList[i];
+                    break;
+                }
+            }
+
+            bool isNode = HiddenHouseService.IsNode(name);
+            string nadiText = NadiCalculationService.ResolveNadiCoordinates(hsd.D3, hsd.D4, hsd.D7, hsd.D8, isNode);
+            HashSet<int> set = new HashSet<int>();
+            List<int> nadis = HiddenHouseService.ParseHouseNumbers(nadiText);
+            for (int i = 0; i < nadis.Count; i++)
+                set.Add(nadis[i]);
+            return set;
+        }
+
+        private static bool TestHiddenHouseSpecExamples()
+        {
+            // The exact regression cases from the feature specification.
+            // SUN: SGN=[9], STL=[], SUB=[4], Posited=[1], Existing Nadi=[1,9] -> hidden [4].
+            List<int> sunFinal = HiddenHouseService.ComputeHiddenHouses(
+                HouseList(9), new List<int>(), HouseList(4), HouseList(1), HouseSet(1, 9));
+            if (Join(sunFinal) != "4")
+            {
+                Fail(string.Format("SUN spec example: hidden '{0}', expected '4'", Join(sunFinal)));
+                return false;
+            }
+
+            // MOON: SGN=[8], STL=[2,6,10], SUB=[3], Posited=[7], Existing Nadi=[6,8]
+            //        -> hidden [2,3,7,10] (numerically sorted).
+            List<int> moonFinal = HiddenHouseService.ComputeHiddenHouses(
+                HouseList(8), HouseList(2, 6, 10), HouseList(3), HouseList(7), HouseSet(6, 8));
+            if (Join(moonFinal) != "2, 3, 7, 10")
+            {
+                Fail(string.Format("MOON spec example: hidden '{0}', expected '2, 3, 7, 10'", Join(moonFinal)));
+                return false;
+            }
+
+            // Duplicates within and across sources collapse.
+            List<int> dupFinal = HiddenHouseService.ComputeHiddenHouses(
+                HouseList(9, 9, 4), HouseList(4), new List<int>(), HouseList(1), HouseSet(1, 9));
+            if (Join(dupFinal) != "4")
+            {
+                Fail(string.Format("duplicate sources: hidden '{0}', expected '4'", Join(dupFinal)));
+                return false;
+            }
+
+            // STL and SUB both point at house 8; 8 is already significant -> nothing hidden.
+            List<int> absorbedFinal = HiddenHouseService.ComputeHiddenHouses(
+                HouseSet(8), HouseSet(8), new List<int>(), HouseSet(8), HouseSet(8));
+            if (absorbedFinal.Count != 0)
+            {
+                Fail(string.Format("fully-absorbed spec: hidden '{0}', expected empty", Join(absorbedFinal)));
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TestHiddenHouseBasicChart()
+        {
+            AstroChartData chart = BuildReferenceChartData();
+
+            // planet -> expected final hidden houses (numerically sorted, deduped, minus Nadi).
+            string[][] expected = new string[][]
+            {
+                new string[] { "SU", "5" },
+                new string[] { "MO", "2, 7" },
+                new string[] { "MA", "1, 4, 9" },
+                new string[] { "RA", "10" },
+                new string[] { "JU", "3, 6, 10, 12" },
+                new string[] { "SA", "11" },
+                new string[] { "ME", "3, 5, 8" },
+                new string[] { "KE", "8" },
+                new string[] { "VE", "2, 12" }
+            };
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                string actual = Join(ComputeHiddenFor(expected[i][0], chart).Final);
+                if (actual != expected[i][1])
+                {
+                    Fail(string.Format("{0}: final hidden houses '{1}', expected '{2}'", expected[i][0], actual, expected[i][1]));
+                    return false;
+                }
+            }
+
+            // MA exercises all four groups: SGN [5,12], STL [4], SUB [1,9], Posited [12].
+            HiddenHouseResult ma = ComputeHiddenFor("MA", chart);
+            if (Join(ma.Sgn) != "5, 12") { Fail("MA SGN != [5,12]"); return false; }
+            if (Join(ma.Stl) != "4") { Fail("MA STL != [4]"); return false; }
+            if (Join(ma.Sub) != "1, 9") { Fail("MA SUB != [1,9]"); return false; }
+            if (Join(ma.Posited) != "12") { Fail("MA Posited != [12]"); return false; }
+            if (Join(ma.Candidates) != "1, 4, 5, 9, 12") { Fail("MA candidates != sorted union [1,4,5,9,12]"); return false; }
+
+            return true;
+        }
+
+        private static bool TestHiddenHouseNodes()
+        {
+            AstroChartData chart = BuildReferenceChartData();
+
+            // RA is a node: its existing Nadi is D3(4) + D7(12) + D8(5,12). The sign-lord
+            // houses (D7/D8) form its SGN; STL cusp10, SUB cusp4; only house 10 remains.
+            HiddenHouseResult ra = ComputeHiddenFor("RA", chart);
+            if (Join(ra.Sgn) != "5, 12")
+            {
+                Fail(string.Format("RA SGN (sign-lord houses) != [5,12], got '{0}'", Join(ra.Sgn)));
+                return false;
+            }
+            if (Join(ra.Final) != "10")
+            {
+                Fail(string.Format("RA hidden houses '{0}', expected '10'", Join(ra.Final)));
+                return false;
+            }
+
+            // KE is a node: existing D3(10) + D7(1) + D8(6,11). SUB cusp11, STL cusp8;
+            // 11 already signified -> only 8 remains.
+            HiddenHouseResult ke = ComputeHiddenFor("KE", chart);
+            if (Join(ke.Final) != "8")
+            {
+                Fail(string.Format("KE hidden houses '{0}', expected '8'", Join(ke.Final)));
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TestHiddenHouseEdgeCases()
+        {
+            AstroChartData chart = BuildReferenceChartData();
+
+            // Empty STL: an empty source contributes no candidates.
+            List<int> noStl = HiddenHouseService.ComputeHiddenHouses(
+                HouseSet(9), new List<int>(), HouseSet(4), HouseSet(1), HouseSet(1, 9));
+            if (Join(noStl) != "4") { Fail("empty STL should not contribute houses"); return false; }
+
+            // Every candidate already in Nadi -> no hidden houses, no empty brackets.
+            List<int> all = HiddenHouseService.ComputeHiddenHouses(
+                HouseSet(1, 4), HouseSet(6), new List<int>(), HouseSet(9), HouseSet(1, 4, 6, 9));
+            if (all.Count != 0) { Fail("all-consumed chart should produce no hidden houses"); return false; }
+            if (HiddenHouseService.FormatBracketString(all) != "") { Fail("empty hidden must render no brackets"); return false; }
+
+            // Sun has no cusp where it is the Nakshatra Lord in the reference chart.
+            HiddenHouseResult su = ComputeHiddenFor("SU", chart);
+            if (su.Stl.Count == 0) { Fail("SU should have STL houses in the reference chart"); return false; }
+            HiddenHouseResult sa = ComputeHiddenFor("SA", chart);
+            if (sa.Sub.Count != 0) { Fail("SA is no Cuspal Sub Lord in the reference chart"); return false; }
+
+            return true;
+        }
+
+        private static bool TestHiddenHouseDedupExisting()
+        {
+            AstroChartData chart = BuildReferenceChartData();
+
+            for (int i = 0; i < ReferenceLords.Length; i++)
+            {
+                string name = ReferenceLords[i].Name;
+                HiddenHouseResult result = ComputeHiddenFor(name, chart);
+
+                // No duplicates and every final house comes from a candidate source.
+                for (int j = 0; j < result.Final.Count; j++)
+                {
+                    int nHouse = result.Final[j];
+                    if (!result.Candidates.Contains(nHouse))
+                    {
+                        Fail(string.Format("{0}: final house {1} is not among the candidates", name, nHouse));
+                        return false;
+                    }
+                    if (result.Sgn.Contains(nHouse) == false &&
+                        result.Stl.Contains(nHouse) == false &&
+                        result.Sub.Contains(nHouse) == false &&
+                        result.Posited.Contains(nHouse) == false)
+                    {
+                        Fail(string.Format("{0}: final house {1} belongs to no source group", name, nHouse));
+                        return false;
+                    }
+                }
+
+                for (int j = 0; j < result.Final.Count; j++)
+                {
+                    for (int k = j + 1; k < result.Final.Count; k++)
+                    {
+                        if (result.Final[j] == result.Final[k])
+                        {
+                            Fail(string.Format("{0}: duplicate house {1} in final list", name, result.Final[j]));
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            // A planet must never hide a house that is already part of its Nadi coordinates.
+            string[][] na = new string[][] { new string[] { "SU", "9" }, new string[] { "MA", "5" }, new string[] { "KE", "11" } };
+            for (int i = 0; i < na.Length; i++)
+            {
+                string name = na[i][0];
+                HiddenHouseResult result = ComputeHiddenFor(name, chart);
+                HashSet<int> existing = ExistingNadiSet(name);
+                for (int j = 0; j < result.Final.Count; j++)
+                {
+                    if (existing.Contains(result.Final[j]))
+                    {
+                        Fail(string.Format("{0}: house {1} belongs to existing Nadi but is still hidden", name, result.Final[j]));
+                        return false;
+                    }
+                }
+                if (existing.Contains(int.Parse(na[i][1])) == false)
+                {
+                    Fail(string.Format("{0}: control Nadi house {1} missing from existing set", name, na[i][1]));
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool TestHiddenHouseFormatting()
+        {
+            List<int> houses = new List<int>();
+            houses.Add(7);
+            houses.Add(10);
+
+            if (HiddenHouseService.FormatHouseList(houses) != "7, 10") { Fail("FormatHouseList(7,10) != '7, 10'"); return false; }
+            if (HiddenHouseService.FormatBracketString(houses) != "(7, 10)") { Fail("FormatBracketString(7,10) != '(7, 10)'"); return false; }
+            if (HiddenHouseService.FormatHouseList(null) != "") { Fail("FormatHouseList(null) should be empty"); return false; }
+            if (HiddenHouseService.FormatBracketString(new List<int>()) != "") { Fail("empty bracket list should be empty string"); return false; }
+            if (HiddenHouseService.IsNode("RA") != true) { Fail("IsNode(RA) != true"); return false; }
+            if (HiddenHouseService.IsNode("KE") != true) { Fail("IsNode(KE) != true"); return false; }
+            if (HiddenHouseService.IsNode("SU") != false) { Fail("IsNode(SU) != false"); return false; }
+            if (HiddenHouseService.IsNode("") != false) { Fail("IsNode('') != false"); return false; }
+            if (Join(HiddenHouseService.ParseHouseNumbers("1 9")) != "1, 9") { Fail("ParseHouseNumbers('1 9') != [1,9]"); return false; }
+            if (Join(HiddenHouseService.ParseHouseNumbers("5, 12")) != "5, 12") { Fail("ParseHouseNumbers('5, 12') != [5,12]"); return false; }
+            return true;
+        }
+
+        private static bool TestHiddenHouseChartShared()
+        {
+            AstroChartData chart = BuildReferenceChartData();
+            Dictionary<string, HiddenHouseResult> dict = HiddenHouseService.ComputeForChart(chart);
+
+            if (dict.Count != ReferenceLords.Length)
+            {
+                Fail(string.Format("ComputeForChart returned {0} planets, expected {1}", dict.Count, ReferenceLords.Length));
+                return false;
+            }
+
+            // The signification and Nadi tables read from the same dictionary, so
+            // the per-planet values must match the direct per-planet computation.
+            for (int i = 0; i < ReferenceLords.Length; i++)
+            {
+                string name = ReferenceLords[i].Name;
+                HiddenHouseResult chartResult;
+                if (!dict.TryGetValue(name, out chartResult))
+                {
+                    Fail("ComputeForChart missing planet " + name);
+                    return false;
+                }
+
+                HiddenHouseResult direct = ComputeHiddenFor(name, chart);
+                if (Join(chartResult.Final) != Join(direct.Final))
+                {
+                    Fail(string.Format("{0}: chart-level final '{1}' differs from direct '{2}'", name, Join(chartResult.Final), Join(direct.Final)));
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool TestHiddenHouseDynamic()
+        {
+            AstroChartData chart = BuildReferenceChartData();
+            string originalSu = Join(ComputeHiddenFor("SU", chart).Final);
+            string originalSa = Join(ComputeHiddenFor("SA", chart).Final);
+            if (originalSu != "5") { Fail("control: SU hidden should start as '5'"); return false; }
+
+            // Changing the Sun's owned house (D4) changes its SGN and its Nadi,
+            // which changes the hidden houses even though the cusps stay fixed.
+            for (int i = 0; i < chart.HouseSignificationList.Count; i++)
+            {
+                if (chart.HouseSignificationList[i].Planet == "SU")
+                    chart.HouseSignificationList[i].D4 = "2";
+            }
+
+            string changedSu = Join(ComputeHiddenFor("SU", chart).Final);
+            if (changedSu == originalSu || changedSu != "5, 9")
+            {
+                Fail(string.Format("SU D4 change produced '{0}', expected '5, 9'", changedSu));
+                return false;
+            }
+
+            // Changing a cusp's Sub Lord changes the SUB group and the hidden list.
+            for (int i = 0; i < chart.CuspList.Count; i++)
+            {
+                if (chart.CuspList[i].HouseNo == 11)
+                    chart.CuspList[i].SubLord = "SU";
+            }
+
+            string cuspChanged = Join(ComputeHiddenFor("SU", chart).Final);
+            if (cuspChanged == changedSu || cuspChanged != "5, 9, 11")
+            {
+                Fail(string.Format("cusp 11 SubLord change produced '{0}', expected '5, 9, 11'", cuspChanged));
+                return false;
+            }
+
+            // SA is unaffected by the Sun's ownership change.
+            if (Join(ComputeHiddenFor("SA", chart).Final) != originalSa)
+            {
+                Fail("SA hidden houses changed although its own data did not");
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
     }
 }

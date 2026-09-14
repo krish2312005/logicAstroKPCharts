@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using srlWebCom.Astro.AstroObjects;
 
@@ -16,6 +17,7 @@ namespace logicAstroKPCharts
         private bool m_btrActive;
         private Func<DateTime, AstroChartData> m_btrEngine;
         private Dictionary<string, HouseSignificationData> m_nadiSignifications;
+        private Dictionary<string, HiddenHouseResult> m_hiddenHouses;
         private SouthIndianChartControl m_lagnaChart;
         private SouthIndianChartControl m_kpChart;
 
@@ -32,6 +34,9 @@ namespace logicAstroKPCharts
             m_kpChart.Dock = DockStyle.Fill;
             m_kpChart.ChartType = SouthIndianChartType.KP;
             panelKpChart.Controls.Add(m_kpChart);
+
+            dgvSignification.CellPainting += DgvSignification_CellPainting;
+            dgvNadi.CellPainting += DgvNadi_CellPainting;
 
             btnBTRMinusDay.Click += (s, e) => ApplyBtrDelta(TimeSpan.FromDays(-1));
             btnBTRPlusDay.Click += (s, e) => ApplyBtrDelta(TimeSpan.FromDays(1));
@@ -138,6 +143,8 @@ namespace logicAstroKPCharts
 
             m_lagnaChart.SetChartData(BuildLagnaEntries(), FindLagnaSign());
             m_kpChart.SetChartData(BuildKpEntries(), FindLagnaSign());
+
+            m_hiddenHouses = HiddenHouseService.ComputeForChart(m_chartData);
 
             SetupPlanetTable();
             SetupCuspTable();
@@ -377,7 +384,7 @@ namespace logicAstroKPCharts
 
             foreach (HouseSignificationData hsd in m_chartData.HouseSignificationList)
             {
-                int rowIdx = dgvSignification.Rows.Add(hsd.StarWise, hsd.StarLord, hsd.Planet, hsd.SubLord, hsd.SubWise);
+                int rowIdx = dgvSignification.Rows.Add(hsd.StarWise, hsd.StarLord, hsd.Planet, hsd.SubLord, EncodeSubWiseWithHiddenHouses(hsd));
                 DataGridViewRow row = dgvSignification.Rows[rowIdx];
 
                 row.Cells[1].Style.Font = new Font("Segoe UI", 9F);
@@ -413,6 +420,94 @@ namespace logicAstroKPCharts
             }
 
             return "";
+        }
+
+        private string EncodeSubWiseWithHiddenHouses(HouseSignificationData hsd)
+        {
+            HiddenHouseResult hidden = GetHiddenResult(hsd.Planet);
+            string hiddenBrackets = "";
+            if (hidden != null && hidden.Final.Count > 0)
+            {
+                string contextNumbers = (hsd.StarWise ?? "") + " " + (hsd.SubWise ?? "");
+                hiddenBrackets = HiddenHouseService.FormatBracketString(RemoveDuplicateHouses(hidden.Final, contextNumbers));
+            }
+            return GridRichTextPainter.Encode(hsd.SubWise, hiddenBrackets);
+        }
+
+        private string EncodeSignNadiWithHiddenHouses(string strPlanetName)
+        {
+            string nadiText = GetNadiCoordinates(strPlanetName);
+            HiddenHouseResult hidden = GetHiddenResult(strPlanetName);
+            string hiddenBrackets = "";
+            if (hidden != null && hidden.Final.Count > 0)
+                hiddenBrackets = HiddenHouseService.FormatBracketString(RemoveDuplicateHouses(hidden.Final, nadiText));
+            return GridRichTextPainter.Encode(nadiText, hiddenBrackets);
+        }
+
+        private HiddenHouseResult GetHiddenResult(string strPlanet)
+        {
+            if (m_hiddenHouses == null) return null;
+
+            string clean = (strPlanet ?? "").Replace("#", "").Replace("*", "").Trim().ToUpperInvariant();
+            if (clean.Length == 0) return null;
+
+            HiddenHouseResult result;
+            if (m_hiddenHouses.TryGetValue(clean, out result))
+                return result;
+            return null;
+        }
+
+        private static List<int> RemoveDuplicateHouses(List<int> houses, string strContext)
+        {
+            if (houses == null || string.IsNullOrEmpty(strContext))
+                return houses;
+
+            HashSet<int> present = new HashSet<int>();
+            foreach (Match m in Regex.Matches(strContext, @"\d+"))
+            {
+                int n;
+                if (int.TryParse(m.Value, out n) && n >= 1 && n <= 12)
+                    present.Add(n);
+            }
+
+            List<int> filtered = new List<int>();
+            for (int i = 0; i < houses.Count; i++)
+            {
+                if (!present.Contains(houses[i]))
+                    filtered.Add(houses[i]);
+            }
+            return filtered;
+        }
+
+        private void DgvSignification_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex != 4)
+                return;
+            PaintRichTextCell(e);
+        }
+
+        private void DgvNadi_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex != 2)
+                return;
+            PaintRichTextCell(e);
+        }
+
+        private static void PaintRichTextCell(DataGridViewCellPaintingEventArgs e)
+        {
+            object val = e.Value;
+            if (val == null) return;
+
+            string strValue = val as string;
+            if (string.IsNullOrEmpty(strValue)) return;
+
+            string baseText;
+            string hiddenText;
+            if (!GridRichTextPainter.TrySplit(strValue, out baseText, out hiddenText))
+                return;
+
+            GridRichTextPainter.PaintCell(e, baseText, hiddenText);
+            e.Handled = true;
         }
 
         private void SetupNadiTable()
@@ -455,7 +550,7 @@ namespace logicAstroKPCharts
                 if (!string.IsNullOrEmpty(pd.Strength))
                     displayName = pd.Name + pd.Strength;
 
-                int rowIdx = dgvNadi.Rows.Add(displayName, pd.Name, GetNadiCoordinates(pd.Name),
+                int rowIdx = dgvNadi.Rows.Add(displayName, pd.Name, EncodeSignNadiWithHiddenHouses(pd.Name),
                     pd.StarLord, GetNadiCoordinates(pd.StarLord), pd.SubLord, GetNadiCoordinates(pd.SubLord));
                 DataGridViewRow row = dgvNadi.Rows[rowIdx];
 

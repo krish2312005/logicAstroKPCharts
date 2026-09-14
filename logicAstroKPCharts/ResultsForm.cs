@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using srlWebCom.Astro.AstroObjects;
 
@@ -8,6 +10,7 @@ namespace logicAstroKPCharts
     public partial class ResultsForm : Form
     {
         private AstroChartData m_chartData;
+        private Dictionary<string, HiddenHouseResult> m_hiddenHouses;
         private bool m_bFullScreen = false;
         private FormWindowState m_prevWindowState;
         private FormBorderStyle m_prevBorderStyle;
@@ -27,6 +30,8 @@ namespace logicAstroKPCharts
             btnFullScreen.Click += btnFullScreen_Click;
             btnClose.Click += btnClose_Click;
             this.DoubleClick += ResultsForm_DoubleClick;
+
+            dgvSignification.CellPainting += DgvSignification_CellPainting;
 
             LoadData();
         }
@@ -379,6 +384,8 @@ namespace logicAstroKPCharts
             dgvSignification.Columns.Add("SubLord", "Sub");
             dgvSignification.Columns.Add("SubWise", "Sub-Wise Significations");
 
+            m_hiddenHouses = HiddenHouseService.ComputeForChart(m_chartData);
+
             dgvSignification.Columns[0].Width = 250;
             dgvSignification.Columns[1].Width = 55;
             dgvSignification.Columns[2].Width = 55;
@@ -395,7 +402,7 @@ namespace logicAstroKPCharts
 
             foreach (HouseSignificationData hsd in m_chartData.HouseSignificationList)
             {
-                int rowIdx = dgvSignification.Rows.Add(hsd.StarWise, hsd.StarLord, hsd.Planet, hsd.SubLord, hsd.SubWise);
+                int rowIdx = dgvSignification.Rows.Add(hsd.StarWise, hsd.StarLord, hsd.Planet, hsd.SubLord, EncodeSubWiseWithHiddenHouses(hsd));
                 DataGridViewRow row = dgvSignification.Rows[rowIdx];
 
                 row.Cells[1].Style.Font = new Font("Segoe UI", 9F);
@@ -421,6 +428,77 @@ namespace logicAstroKPCharts
             lblPlanetLegend.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
             lblPlanetLegend.ForeColor = Color.FromArgb(80, 80, 80);
             lblPlanetLegend.TextAlign = ContentAlignment.MiddleCenter;
+        }
+
+        private string EncodeSubWiseWithHiddenHouses(HouseSignificationData hsd)
+        {
+            HiddenHouseResult hidden = GetHiddenResult(hsd.Planet);
+            string hiddenBrackets = "";
+            if (hidden != null && hidden.Final.Count > 0)
+            {
+                string contextNumbers = (hsd.StarWise ?? "") + " " + (hsd.SubWise ?? "");
+                hiddenBrackets = HiddenHouseService.FormatBracketString(RemoveDuplicateHouses(hidden.Final, contextNumbers));
+            }
+            return GridRichTextPainter.Encode(hsd.SubWise, hiddenBrackets);
+        }
+
+        private HiddenHouseResult GetHiddenResult(string strPlanet)
+        {
+            if (m_hiddenHouses == null) return null;
+
+            string clean = (strPlanet ?? "").Replace("#", "").Replace("*", "").Trim().ToUpperInvariant();
+            if (clean.Length == 0) return null;
+
+            HiddenHouseResult result;
+            if (m_hiddenHouses.TryGetValue(clean, out result))
+                return result;
+            return null;
+        }
+
+        private static List<int> RemoveDuplicateHouses(List<int> houses, string strContext)
+        {
+            if (houses == null || string.IsNullOrEmpty(strContext))
+                return houses;
+
+            HashSet<int> present = new HashSet<int>();
+            foreach (Match m in Regex.Matches(strContext, @"\d+"))
+            {
+                int n;
+                if (int.TryParse(m.Value, out n) && n >= 1 && n <= 12)
+                    present.Add(n);
+            }
+
+            List<int> filtered = new List<int>();
+            for (int i = 0; i < houses.Count; i++)
+            {
+                if (!present.Contains(houses[i]))
+                    filtered.Add(houses[i]);
+            }
+            return filtered;
+        }
+
+        private void DgvSignification_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex != 4)
+                return;
+            PaintRichTextCell(e);
+        }
+
+        private static void PaintRichTextCell(DataGridViewCellPaintingEventArgs e)
+        {
+            object val = e.Value;
+            if (val == null) return;
+
+            string strValue = val as string;
+            if (string.IsNullOrEmpty(strValue)) return;
+
+            string baseText;
+            string hiddenText;
+            if (!GridRichTextPainter.TrySplit(strValue, out baseText, out hiddenText))
+                return;
+
+            GridRichTextPainter.PaintCell(e, baseText, hiddenText);
+            e.Handled = true;
         }
 
         private string ConvertToRomanLetters(string strHouseNo)
