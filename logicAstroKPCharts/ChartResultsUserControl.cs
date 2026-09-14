@@ -25,6 +25,7 @@ namespace logicAstroKPCharts
             SetupPlanetTable();
             SetupCuspTable();
             SetupSignificationTable();
+            SetupNadiTable();
             SetupPlanetLegend();
         }
 
@@ -343,6 +344,87 @@ namespace logicAstroKPCharts
             }
 
             DisableSorting(dgvSignification);
+        }
+
+        private string GetNadiCoordinates(string strLord)
+        {
+            switch (strLord.Trim().ToUpper())
+            {
+                case "SU": return "1, 9";
+                case "MO": return "7, 8";
+                case "MA": return "5, 12";
+                case "RA": return "4, 5, 12";
+                case "JU": return "1, 4, 10";
+                case "SA": return "2, 3, 7";
+                case "ME": return "1, 7, 10";
+                case "KE": return "1, 6, 10, 11";
+                case "VE": return "1, 6, 11";
+                default: return "";
+            }
+        }
+
+        private void SetupNadiTable()
+        {
+            dgvNadi.Columns.Clear();
+            dgvNadi.Columns.Add("Position", "Position");
+            dgvNadi.Columns.Add("SignLord", "Sgn");
+            dgvNadi.Columns.Add("SignNadi", "Sgn Nadi");
+            dgvNadi.Columns.Add("StarLord", "Str");
+            dgvNadi.Columns.Add("StarNadi", "Str Nadi");
+            dgvNadi.Columns.Add("SubLord", "Sub");
+            dgvNadi.Columns.Add("SubNadi", "Sub Nadi");
+
+            dgvNadi.Columns[0].Width = 90;
+            dgvNadi.Columns[1].Width = 40;
+            dgvNadi.Columns[2].Width = 100;
+            dgvNadi.Columns[3].Width = 40;
+            dgvNadi.Columns[4].Width = 100;
+            dgvNadi.Columns[5].Width = 40;
+            dgvNadi.Columns[6].Width = 100;
+
+            foreach (DataGridViewColumn col in dgvNadi.Columns)
+            {
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            foreach (PlanetData pd in m_chartData.PlanetList)
+            {
+                string displayName = pd.Name;
+                if (!string.IsNullOrEmpty(pd.Strength))
+                    displayName = pd.Name + pd.Strength;
+
+                int rowIdx = dgvNadi.Rows.Add(displayName, pd.SignLord, GetNadiCoordinates(pd.SignLord),
+                    pd.StarLord, GetNadiCoordinates(pd.StarLord), pd.SubLord, GetNadiCoordinates(pd.SubLord));
+                DataGridViewRow row = dgvNadi.Rows[rowIdx];
+
+                row.Cells[0].Style.ForeColor = Color.FromArgb(0, 0, 204);
+                row.Cells[0].Style.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                row.Cells[2].Style.BackColor = Color.FromArgb(240, 233, 216);
+                row.Cells[4].Style.BackColor = Color.FromArgb(240, 248, 255);
+                row.Cells[6].Style.BackColor = Color.FromArgb(240, 233, 216);
+            }
+
+            int sepIdx = dgvNadi.Rows.Add();
+            dgvNadi.Rows[sepIdx].Height = 6;
+            dgvNadi.Rows[sepIdx].DefaultCellStyle.BackColor = Color.FromArgb(221, 140, 8);
+
+            foreach (CuspData cd in m_chartData.CuspList)
+            {
+                string cuspDisplay = ConvertToRomanLetters(cd.HouseNo.ToString());
+
+                int rowIdx = dgvNadi.Rows.Add(cuspDisplay, cd.SignLord, GetNadiCoordinates(cd.SignLord),
+                    cd.StarLord, GetNadiCoordinates(cd.StarLord), cd.SubLord, GetNadiCoordinates(cd.SubLord));
+                DataGridViewRow row = dgvNadi.Rows[rowIdx];
+
+                row.Cells[0].Style.ForeColor = Color.FromArgb(204, 0, 0);
+                row.Cells[0].Style.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                row.Cells[2].Style.BackColor = Color.FromArgb(240, 233, 216);
+                row.Cells[4].Style.BackColor = Color.FromArgb(240, 248, 255);
+                row.Cells[6].Style.BackColor = Color.FromArgb(240, 233, 216);
+            }
+
+            DisableSorting(dgvNadi);
         }
 
         private void SetupPlanetLegend()
