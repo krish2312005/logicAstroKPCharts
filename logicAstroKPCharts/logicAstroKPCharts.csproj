@@ -91,6 +91,9 @@
     <Compile Include="..\AstroSource\AstroObjects.cs">
       <Link>AstroSource\AstroObjects.cs</Link>
     </Compile>
+    <Compile Include="..\AstroSource\NadiCalculationService.cs">
+      <Link>AstroSource\NadiCalculationService.cs</Link>
+    </Compile>
     <Compile Include="..\AstroSource\AstroVMDasa.cs">
       <Link>AstroSource\AstroVMDasa.cs</Link>
     </Compile>

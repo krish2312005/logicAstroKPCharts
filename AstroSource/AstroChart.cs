@@ -888,9 +888,8 @@ namespace srlWebCom.Astro.AstroObjects
                         kpCommonObject subNodeObj = GetRawKPAstroCommonObject(AO.StarSubLord);
                         if (subNodeObj != null)
                         {
-                            AO.D6 = GetHouseOccupiedBy(subNodeObj.SignLord);
-                            AO.D6 += ",";
-                            AO.D6 += GetHousesOwnedBy(subNodeObj.SignLord);
+                            AO.D6 = NadiCalculationService.BuildNodeHouseSignifications(subNodeObj.SignLord,
+                                GetHouseOccupiedBy, GetHousesOwnedBy);
                         }
                         subNodeObj = null;
                     }

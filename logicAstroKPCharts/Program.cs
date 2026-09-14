@@ -11,7 +11,7 @@
    or distributor accepts any responsibility for the consequences of using it,
    or for whether it serves any particular purpose or works at all, unless he
    or she says so in writing.
-  
+   
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 2 of the License, or
@@ -24,7 +24,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-***********************************************************/
+ ***********************************************************/
 
 using System;
 using System.Collections.Generic;

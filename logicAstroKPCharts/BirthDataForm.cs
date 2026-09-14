@@ -64,6 +64,7 @@ namespace logicAstroKPCharts
 
         public AstroChartData GeneratedChartData { get; private set; }
         public string GeneratedAstroData { get; private set; }
+        public int GeneratedAyanamsa { get; private set; }
 
         public BirthDataForm(bool loadChartOnShow = false)
         {
@@ -706,6 +707,7 @@ namespace logicAstroKPCharts
 
                 GeneratedChartData = chartData;
                 GeneratedAstroData = strAstroData;
+                GeneratedAyanamsa = m_nAyanamsa;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
