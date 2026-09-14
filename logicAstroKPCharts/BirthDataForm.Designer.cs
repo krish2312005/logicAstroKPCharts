@@ -120,7 +120,7 @@ namespace logicAstroKPCharts
             // 
             // txtDD
             // 
-            this.txtDD.Location = new System.Drawing.Point(110, 55);
+            this.txtDD.Location = new System.Drawing.Point(135, 55);
             this.txtDD.MaxLength = 2;
             this.txtDD.Name = "txtDD";
             this.txtDD.Size = new System.Drawing.Size(35, 25);
@@ -130,7 +130,7 @@ namespace logicAstroKPCharts
             // lblSepChar1
             // 
             this.lblSepChar1.AutoSize = true;
-            this.lblSepChar1.Location = new System.Drawing.Point(148, 58);
+            this.lblSepChar1.Location = new System.Drawing.Point(173, 58);
             this.lblSepChar1.Name = "lblSepChar1";
             this.lblSepChar1.Size = new System.Drawing.Size(12, 17);
             this.lblSepChar1.TabIndex = 6;
@@ -138,7 +138,7 @@ namespace logicAstroKPCharts
             // 
             // txtMM
             // 
-            this.txtMM.Location = new System.Drawing.Point(165, 55);
+            this.txtMM.Location = new System.Drawing.Point(190, 55);
             this.txtMM.MaxLength = 2;
             this.txtMM.Name = "txtMM";
             this.txtMM.Size = new System.Drawing.Size(35, 25);
@@ -148,7 +148,7 @@ namespace logicAstroKPCharts
             // lblSepChar2
             // 
             this.lblSepChar2.AutoSize = true;
-            this.lblSepChar2.Location = new System.Drawing.Point(203, 58);
+            this.lblSepChar2.Location = new System.Drawing.Point(228, 58);
             this.lblSepChar2.Name = "lblSepChar2";
             this.lblSepChar2.Size = new System.Drawing.Size(12, 17);
             this.lblSepChar2.TabIndex = 8;
@@ -156,7 +156,7 @@ namespace logicAstroKPCharts
             // 
             // txtYYYY
             // 
-            this.txtYYYY.Location = new System.Drawing.Point(220, 55);
+            this.txtYYYY.Location = new System.Drawing.Point(245, 55);
             this.txtYYYY.MaxLength = 4;
             this.txtYYYY.Name = "txtYYYY";
             this.txtYYYY.Size = new System.Drawing.Size(60, 25);
@@ -168,7 +168,7 @@ namespace logicAstroKPCharts
             this.lblDateFormat.AutoSize = true;
             this.lblDateFormat.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.lblDateFormat.ForeColor = System.Drawing.Color.Gray;
-            this.lblDateFormat.Location = new System.Drawing.Point(286, 58);
+            this.lblDateFormat.Location = new System.Drawing.Point(311, 58);
             this.lblDateFormat.Name = "lblDateFormat";
             this.lblDateFormat.Size = new System.Drawing.Size(80, 13);
             this.lblDateFormat.TabIndex = 10;
@@ -186,7 +186,7 @@ namespace logicAstroKPCharts
             // 
             // txtHour
             // 
-            this.txtHour.Location = new System.Drawing.Point(110, 93);
+            this.txtHour.Location = new System.Drawing.Point(135, 93);
             this.txtHour.MaxLength = 2;
             this.txtHour.Name = "txtHour";
             this.txtHour.Size = new System.Drawing.Size(35, 25);
@@ -197,7 +197,7 @@ namespace logicAstroKPCharts
             // lblSepChar3
             // 
             this.lblSepChar3.AutoSize = true;
-            this.lblSepChar3.Location = new System.Drawing.Point(148, 96);
+            this.lblSepChar3.Location = new System.Drawing.Point(173, 96);
             this.lblSepChar3.Name = "lblSepChar3";
             this.lblSepChar3.Size = new System.Drawing.Size(13, 17);
             this.lblSepChar3.TabIndex = 13;
@@ -205,7 +205,7 @@ namespace logicAstroKPCharts
             // 
             // txtMin
             // 
-            this.txtMin.Location = new System.Drawing.Point(165, 93);
+            this.txtMin.Location = new System.Drawing.Point(190, 93);
             this.txtMin.MaxLength = 2;
             this.txtMin.Name = "txtMin";
             this.txtMin.Size = new System.Drawing.Size(35, 25);
@@ -216,7 +216,7 @@ namespace logicAstroKPCharts
             // lblSepChar4
             // 
             this.lblSepChar4.AutoSize = true;
-            this.lblSepChar4.Location = new System.Drawing.Point(203, 96);
+            this.lblSepChar4.Location = new System.Drawing.Point(228, 96);
             this.lblSepChar4.Name = "lblSepChar4";
             this.lblSepChar4.Size = new System.Drawing.Size(13, 17);
             this.lblSepChar4.TabIndex = 15;
@@ -224,7 +224,7 @@ namespace logicAstroKPCharts
             // 
             // txtSec
             // 
-            this.txtSec.Location = new System.Drawing.Point(220, 93);
+            this.txtSec.Location = new System.Drawing.Point(245, 93);
             this.txtSec.MaxLength = 2;
             this.txtSec.Name = "txtSec";
             this.txtSec.Size = new System.Drawing.Size(35, 25);
@@ -237,7 +237,7 @@ namespace logicAstroKPCharts
             this.lblTimeFormat.AutoSize = true;
             this.lblTimeFormat.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.lblTimeFormat.ForeColor = System.Drawing.Color.Gray;
-            this.lblTimeFormat.Location = new System.Drawing.Point(261, 96);
+            this.lblTimeFormat.Location = new System.Drawing.Point(286, 96);
             this.lblTimeFormat.Name = "lblTimeFormat";
             this.lblTimeFormat.Size = new System.Drawing.Size(115, 13);
             this.lblTimeFormat.TabIndex = 17;
@@ -246,7 +246,7 @@ namespace logicAstroKPCharts
             // btnNow
             // 
             this.btnNow.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnNow.Location = new System.Drawing.Point(385, 91);
+            this.btnNow.Location = new System.Drawing.Point(415, 91);
             this.btnNow.Name = "btnNow";
             this.btnNow.Size = new System.Drawing.Size(60, 28);
             this.btnNow.TabIndex = 18;
@@ -269,7 +269,7 @@ namespace logicAstroKPCharts
             this.cmbTimeZone.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTimeZone.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.cmbTimeZone.FormattingEnabled = true;
-            this.cmbTimeZone.Location = new System.Drawing.Point(110, 131);
+            this.cmbTimeZone.Location = new System.Drawing.Point(135, 131);
             this.cmbTimeZone.Name = "cmbTimeZone";
             this.cmbTimeZone.Size = new System.Drawing.Size(460, 25);
             this.cmbTimeZone.TabIndex = 20;
@@ -286,7 +286,7 @@ namespace logicAstroKPCharts
             // 
             // txtPOB
             // 
-            this.txtPOB.Location = new System.Drawing.Point(110, 169);
+            this.txtPOB.Location = new System.Drawing.Point(135, 169);
             this.txtPOB.Name = "txtPOB";
             this.txtPOB.Size = new System.Drawing.Size(240, 25);
             this.txtPOB.TabIndex = 22;
@@ -296,7 +296,7 @@ namespace logicAstroKPCharts
             // 
             this.lblState.AutoSize = true;
             this.lblState.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblState.Location = new System.Drawing.Point(370, 172);
+            this.lblState.Location = new System.Drawing.Point(400, 172);
             this.lblState.Name = "lblState";
             this.lblState.Size = new System.Drawing.Size(40, 17);
             this.lblState.TabIndex = 23;
@@ -304,7 +304,7 @@ namespace logicAstroKPCharts
             // 
             // txtSOB
             // 
-            this.txtSOB.Location = new System.Drawing.Point(420, 169);
+            this.txtSOB.Location = new System.Drawing.Point(450, 169);
             this.txtSOB.Name = "txtSOB";
             this.txtSOB.Size = new System.Drawing.Size(150, 25);
             this.txtSOB.TabIndex = 24;
@@ -321,7 +321,7 @@ namespace logicAstroKPCharts
             // 
             // txtCOB
             // 
-            this.txtCOB.Location = new System.Drawing.Point(110, 207);
+            this.txtCOB.Location = new System.Drawing.Point(135, 207);
             this.txtCOB.Name = "txtCOB";
             this.txtCOB.Size = new System.Drawing.Size(180, 25);
             this.txtCOB.TabIndex = 26;
