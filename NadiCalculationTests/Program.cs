@@ -48,6 +48,10 @@ namespace NadiCalculationTests
             Run("GetKPStarSubLords agrees with the model across all 12 signs", TestKPLookupVersusModel);
             Run("BuildNodeHouseSignifications has no stray commas", TestNodeSignifications);
             Run("Nadi coordinates resolve occupied/owned houses for all 27 cells", TestNadiResolution);
+            Run("SP Khullar coordinates match the reference chart data", TestSPKhullarResolution);
+            Run("SP Khullar concatenation order is Posited -> SGN -> STL -> SUB", TestSPKhullarOrder);
+            Run("SP Khullar handles empty components and multiple values", TestSPKhullarEmptyAndMultiple);
+            Run("SP Khullar preserves duplicate house numbers", TestSPKhullarDuplicates);
 
             Console.WriteLine();
             Console.WriteLine("=========================================================");
@@ -640,6 +644,140 @@ private static bool TestKeSubSubSegments()
                         return false;
                     }
                 }
+            }
+
+            return true;
+        }
+
+        private class SPKhullarLord
+        {
+            public string Name;
+            public string Posited;
+            public string Sgn;
+            public string Stl;
+            public string Sub;
+            public string Expected;
+        }
+
+        private static bool TestSPKhullarResolution()
+        {
+            // Reference SP Khullar data. Components map onto the chart's existing
+            // per-lord house data; the expected sequence is the pure-house-number
+            // concatenation Posited -> SGN -> STL -> SUB.
+            SPKhullarLord[] lords = new SPKhullarLord[]
+            {
+                new SPKhullarLord { Name = "Sun#",    Posited = "1",                    Sgn = "9",     Stl = "",          Sub = "4",             Expected = "1 9 4" },
+                new SPKhullarLord { Name = "Moon*",   Posited = "7",                    Sgn = "8",     Stl = "2,6,10",    Sub = "3",             Expected = "7 8 2 6 10 3" },
+                new SPKhullarLord { Name = "Mars",    Posited = "12",                   Sgn = "5,12",  Stl = "",          Sub = "8",             Expected = "12 5 12 8" },
+                new SPKhullarLord { Name = "Saturn*", Posited = "7",                    Sgn = "2,3",   Stl = "8,12",      Sub = "1",             Expected = "7 2 3 8 12 1" },
+                new SPKhullarLord { Name = "Mercury", Posited = "1",                    Sgn = "7,10",  Stl = "4",         Sub = "",              Expected = "1 7 10 4" },
+                new SPKhullarLord { Name = "Ketu",    Posited = "10",                   Sgn = "",      Stl = "1",         Sub = "",              Expected = "10 1" },
+                new SPKhullarLord { Name = "Venus#",  Posited = "1",                    Sgn = "6,11",  Stl = "5,9",       Sub = "10",            Expected = "1 6 11 5 9 10" },
+                new SPKhullarLord { Name = "Jupiter", Posited = "10",                   Sgn = "1,4",   Stl = "11",        Sub = "5,6,7,11,12",   Expected = "10 1 4 11 5 6 7 11 12" },
+                new SPKhullarLord { Name = "Rahu",    Posited = "4",                    Sgn = "",      Stl = "3,7",       Sub = "2,9",           Expected = "4 3 7 2 9" }
+            };
+
+            for (int i = 0; i < lords.Length; i++)
+            {
+                SPKhullarLord lord = lords[i];
+                string actual = NadiCalculationService.ResolveSPKhullarCoordinates(
+                    lord.Posited, lord.Sgn, lord.Stl, lord.Sub);
+
+                if (!string.Equals(actual, lord.Expected, StringComparison.Ordinal))
+                {
+                    Fail(string.Format("SP Khullar {0}: resolved '{1}', expected '{2}'", lord.Name, actual, lord.Expected));
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool TestSPKhullarOrder()
+        {
+            // Posited must come first, then SGN, then STL, then SUB. A sorting or
+            // de-duplicating resolver would reorder/merge these values and break the
+            // expected concatenation.
+            string actual = NadiCalculationService.ResolveSPKhullarCoordinates("7", "8", "2,6,10", "3");
+            if (actual != "7 8 2 6 10 3")
+            {
+                Fail(string.Format("Ordered concatenation failed: '{0}'", actual));
+                return false;
+            }
+
+            actual = NadiCalculationService.ResolveSPKhullarCoordinates("12", "5,12", "", "8");
+            if (actual != "12 5 12 8")
+            {
+                Fail(string.Format("Repeated value across components failed: '{0}'", actual));
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TestSPKhullarEmptyAndMultiple()
+        {
+            // All four components empty -> empty result.
+            if (NadiCalculationService.ResolveSPKhullarCoordinates("", "", "", "") != "")
+            {
+                Fail("All-empty components should produce an empty result");
+                return false;
+            }
+
+            // Empty leading, middle and trailing components are skipped.
+            if (NadiCalculationService.ResolveSPKhullarCoordinates("10", "", "1", "") != "10 1")
+            {
+                Fail("Empty SGN/SUB should be skipped, expected '10 1'");
+                return false;
+            }
+
+            // Only the middle components populated, in order.
+            if (NadiCalculationService.ResolveSPKhullarCoordinates("", "2,3", "8,12", "1") != "2 3 8 12 1")
+            {
+                Fail("Middle components should concatenate in order, expected '2 3 8 12 1'");
+                return false;
+            }
+
+            // Multiple values in every component.
+            string actual = NadiCalculationService.ResolveSPKhullarCoordinates("1", "6,11", "5,9", "10");
+            if (actual != "1 6 11 5 9 10")
+            {
+                Fail(string.Format("Multiple-value components failed: '{0}'", actual));
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TestSPKhullarDuplicates()
+        {
+            // Jupiter-like layout: 11 appears in STL and again in SUB. The two 11s
+            // come from different source components and must both stay.
+            string actual = NadiCalculationService.ResolveSPKhullarCoordinates("10", "1,4", "11", "5,6,7,11,12");
+            if (actual != "10 1 4 11 5 6 7 11 12")
+            {
+                Fail(string.Format("Duplicates were not preserved: '{0}'", actual));
+                return false;
+            }
+
+            // A duplicate within a single component must also be preserved verbatim.
+            string nested = NadiCalculationService.ResolveSPKhullarCoordinates("3", "3", "", "");
+            if (nested != "3 3")
+            {
+                Fail(string.Format("Within-component duplicate was not preserved: '{0}'", nested));
+                return false;
+            }
+
+            // Rahu/Ketu node style rows (empty SGN).
+            if (NadiCalculationService.ResolveSPKhullarCoordinates("4", "", "3,7", "2,9") != "4 3 7 2 9")
+            {
+                Fail("Rahu reference sequence failed");
+                return false;
+            }
+            if (NadiCalculationService.ResolveSPKhullarCoordinates("10", "", "1", "") != "10 1")
+            {
+                Fail("Ketu reference sequence failed");
+                return false;
             }
 
             return true;

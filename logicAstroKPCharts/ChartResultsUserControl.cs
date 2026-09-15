@@ -143,6 +143,7 @@ namespace logicAstroKPCharts
             SetupCuspTable();
             SetupSignificationTable();
             SetupNadiTable();
+            SetupSPKhullarTable();
             SetupPlanetLegend();
         }
 
@@ -469,6 +470,70 @@ namespace logicAstroKPCharts
             }
 
             DisableSorting(dgvNadi);
+        }
+
+        private string GetSPKhullarCoordinates(string strLord)
+        {
+            if (string.IsNullOrEmpty(strLord) || m_nadiSignifications == null)
+            {
+                return "";
+            }
+
+            HouseSignificationData hsd;
+            if (m_nadiSignifications.TryGetValue(strLord.Trim(), out hsd))
+            {
+                // SP Khullar coordinates = Posited + SGN + STL + SUB.
+                //   Posited = D3  (the house(s) the lord is posited in)
+                //   SGN     = D4  (the sign(s) the lord owns)
+                //   STL     = D1 + D2 (houses of the lord's star lord; occupied + owned)
+                //   SUB     = D5 + D6 (houses of the lord's sub lord; occupied + owned)
+                string strStl = NadiCalculationService.CombineHouseLists(hsd.D1, hsd.D2);
+                string strSub = NadiCalculationService.CombineHouseLists(hsd.D5, hsd.D6);
+                return NadiCalculationService.ResolveSPKhullarCoordinates(hsd.D3, hsd.D4, strStl, strSub);
+            }
+
+            return "";
+        }
+
+        private void SetupSPKhullarTable()
+        {
+            dgvSPKhullar.Columns.Clear();
+            dgvSPKhullar.Columns.Add("Planet", "Planet");
+            dgvSPKhullar.Columns.Add("SPKhullar", "SP Khullar Nadi Coordinates");
+
+            ConfigureFillColumn(dgvSPKhullar.Columns[0], 1F, 70);
+            ConfigureFillColumn(dgvSPKhullar.Columns[1], 3F, 240);
+
+            foreach (DataGridViewColumn col in dgvSPKhullar.Columns)
+            {
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            m_nadiSignifications = new Dictionary<string, HouseSignificationData>(StringComparer.OrdinalIgnoreCase);
+            foreach (HouseSignificationData hsd in m_chartData.HouseSignificationList)
+            {
+                string planet = (hsd.Planet ?? "").Replace("#", "").Replace("*", "").Trim();
+                if (planet.Length == 0) continue;
+                if (!m_nadiSignifications.ContainsKey(planet))
+                    m_nadiSignifications[planet] = hsd;
+            }
+
+            foreach (PlanetData pd in m_chartData.PlanetList)
+            {
+                string displayName = pd.Name;
+                if (!string.IsNullOrEmpty(pd.Strength))
+                    displayName = pd.Name + pd.Strength;
+
+                int rowIdx = dgvSPKhullar.Rows.Add(displayName, GetSPKhullarCoordinates(pd.Name));
+                DataGridViewRow row = dgvSPKhullar.Rows[rowIdx];
+
+                row.Cells[0].Style.ForeColor = Color.FromArgb(0, 0, 204);
+                row.Cells[0].Style.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                row.Cells[1].Style.BackColor = Color.FromArgb(240, 233, 216);
+            }
+
+            DisableSorting(dgvSPKhullar);
         }
 
         private void SetupPlanetLegend()

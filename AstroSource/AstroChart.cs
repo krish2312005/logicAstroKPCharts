@@ -2431,8 +2431,12 @@ namespace srlWebCom.Astro.AstroObjects
                             strPlMarker = "*";
                         hsd.Planet = plObj.Name + strPlMarker;
                         hsd.SubLord = plObj.StarSubLord;
+                        hsd.D1 = plObj.D1;
+                        hsd.D2 = plObj.D2;
                         hsd.D3 = plObj.D3;
                         hsd.D4 = plObj.D4;
+                        hsd.D5 = plObj.D5;
+                        hsd.D6 = plObj.D6;
                         hsd.D7 = plObj.D7;
                         hsd.D8 = plObj.D8;
 

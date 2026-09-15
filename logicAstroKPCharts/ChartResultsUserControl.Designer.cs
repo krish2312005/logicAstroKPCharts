@@ -56,6 +56,9 @@ namespace logicAstroKPCharts
             this.pnlNadi = new System.Windows.Forms.Panel();
             this.dgvNadi = new System.Windows.Forms.DataGridView();
             this.lblNadiHeader = new System.Windows.Forms.Label();
+            this.pnlSPKhullar = new System.Windows.Forms.Panel();
+            this.dgvSPKhullar = new System.Windows.Forms.DataGridView();
+            this.lblSPKhullarHeader = new System.Windows.Forms.Label();
 
             this.pnlHeader.SuspendLayout();
             this.pnlBtrButtons.SuspendLayout();
@@ -76,6 +79,8 @@ namespace logicAstroKPCharts
             ((System.ComponentModel.ISupportInitialize)(this.dgvSignification)).BeginInit();
             this.pnlNadi.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvNadi)).BeginInit();
+            this.pnlSPKhullar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSPKhullar)).BeginInit();
             this.SuspendLayout();
             //
             // pnlHeader
@@ -505,12 +510,14 @@ namespace logicAstroKPCharts
             this.tlpRight.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpRight.Controls.Add(this.pnlSig, 0, 0);
             this.tlpRight.Controls.Add(this.pnlNadi, 0, 1);
+            this.tlpRight.Controls.Add(this.pnlSPKhullar, 0, 2);
             this.tlpRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpRight.Location = new System.Drawing.Point(0, 0);
             this.tlpRight.Name = "tlpRight";
-            this.tlpRight.RowCount = 2;
-            this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpRight.RowCount = 3;
+            this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 36F));
+            this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 32F));
+            this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 32F));
             this.tlpRight.Size = new System.Drawing.Size(588, 848);
             this.tlpRight.TabIndex = 0;
             //
@@ -523,7 +530,7 @@ namespace logicAstroKPCharts
             this.pnlSig.Controls.Add(this.lblSigHeader);
             this.pnlSig.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlSig.Location = new System.Drawing.Point(0, 0);
-            this.pnlSig.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.pnlSig.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.pnlSig.Name = "pnlSig";
             this.pnlSig.Size = new System.Drawing.Size(588, 416);
             this.pnlSig.TabIndex = 0;
@@ -636,6 +643,60 @@ namespace logicAstroKPCharts
             this.dgvNadi.TabIndex = 1;
             this.dgvNadi.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(253)))), ((int)(((byte)(246)))));
             //
+            // pnlSPKhullar
+            //
+            this.pnlSPKhullar.BackColor = System.Drawing.Color.White;
+            this.pnlSPKhullar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlSPKhullar.Controls.Add(this.dgvSPKhullar);
+            this.pnlSPKhullar.Controls.Add(this.lblSPKhullarHeader);
+            this.pnlSPKhullar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlSPKhullar.Location = new System.Drawing.Point(0, 576);
+            this.pnlSPKhullar.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlSPKhullar.Name = "pnlSPKhullar";
+            this.pnlSPKhullar.Size = new System.Drawing.Size(588, 266);
+            this.pnlSPKhullar.TabIndex = 2;
+            //
+            // lblSPKhullarHeader
+            //
+            this.lblSPKhullarHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(140)))), ((int)(((byte)(8)))));
+            this.lblSPKhullarHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblSPKhullarHeader.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.lblSPKhullarHeader.ForeColor = System.Drawing.Color.White;
+            this.lblSPKhullarHeader.Location = new System.Drawing.Point(0, 0);
+            this.lblSPKhullarHeader.Name = "lblSPKhullarHeader";
+            this.lblSPKhullarHeader.Size = new System.Drawing.Size(586, 26);
+            this.lblSPKhullarHeader.TabIndex = 0;
+            this.lblSPKhullarHeader.Text = "SP KHULLAR NADI COORDINATES";
+            this.lblSPKhullarHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            // dgvSPKhullar
+            //
+            this.dgvSPKhullar.AllowUserToAddRows = false;
+            this.dgvSPKhullar.AllowUserToDeleteRows = false;
+            this.dgvSPKhullar.AllowUserToResizeRows = false;
+            this.dgvSPKhullar.BackgroundColor = System.Drawing.Color.White;
+            this.dgvSPKhullar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.dgvSPKhullar.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvSPKhullar.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.dgvSPKhullar.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(230)))), ((int)(((byte)(99)))));
+            this.dgvSPKhullar.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.dgvSPKhullar.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.Black;
+            this.dgvSPKhullar.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvSPKhullar.ColumnHeadersHeight = 26;
+            this.dgvSPKhullar.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.dgvSPKhullar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvSPKhullar.EnableHeadersVisualStyles = false;
+            this.dgvSPKhullar.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dgvSPKhullar.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dgvSPKhullar.Location = new System.Drawing.Point(0, 26);
+            this.dgvSPKhullar.Name = "dgvSPKhullar";
+            this.dgvSPKhullar.ReadOnly = true;
+            this.dgvSPKhullar.RowHeadersVisible = false;
+            this.dgvSPKhullar.RowTemplate.Height = 23;
+            this.dgvSPKhullar.Size = new System.Drawing.Size(586, 238);
+            this.dgvSPKhullar.TabIndex = 1;
+            this.dgvSPKhullar.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(253)))), ((int)(((byte)(246)))));
+            //
             // ChartResultsUserControl
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -666,6 +727,8 @@ namespace logicAstroKPCharts
             ((System.ComponentModel.ISupportInitialize)(this.dgvSignification)).EndInit();
             this.pnlNadi.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvNadi)).EndInit();
+            this.pnlSPKhullar.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSPKhullar)).EndInit();
             this.ResumeLayout(false);
         }
 
@@ -710,5 +773,8 @@ namespace logicAstroKPCharts
         private System.Windows.Forms.Panel pnlNadi;
         private System.Windows.Forms.DataGridView dgvNadi;
         private System.Windows.Forms.Label lblNadiHeader;
+        private System.Windows.Forms.Panel pnlSPKhullar;
+        private System.Windows.Forms.DataGridView dgvSPKhullar;
+        private System.Windows.Forms.Label lblSPKhullarHeader;
     }
 }

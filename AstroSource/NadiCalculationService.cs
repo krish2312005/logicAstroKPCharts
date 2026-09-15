@@ -450,6 +450,104 @@ namespace srlWebCom.Astro.AstroObjects
 
         #endregion
 
+        #region SP Khullar Coordinate Resolution
+
+        /// <summary>
+        /// Joins two or more comma-separated house lists into a single comma-separated
+        /// list, preserving the source order of every component and keeping duplicate
+        /// house numbers as they appear. Empty components are skipped. Used to build
+        /// the SP Khullar STL (star lord) and SUB (sub lord) components from the two
+        /// D-field sub-parts the chart already computes.
+        /// </summary>
+        public static string CombineHouseLists(params string[] strLists)
+        {
+            StringBuilder result = new StringBuilder();
+
+            if (strLists != null)
+            {
+                for (int i = 0; i < strLists.Length; i++)
+                {
+                    if (string.IsNullOrEmpty(strLists[i]))
+                    {
+                        continue;
+                    }
+
+                    string[] strEntries = strLists[i].Split(',');
+                    for (int j = 0; j < strEntries.Length; j++)
+                    {
+                        string strEntry = strEntries[j].Trim();
+                        if (strEntry.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        int nHouse;
+                        if (!int.TryParse(strEntry, out nHouse) || nHouse < 1 || nHouse > 12)
+                        {
+                            continue;
+                        }
+
+                        if (result.Length > 0)
+                        {
+                            result.Append(',');
+                        }
+                        result.Append(nHouse);
+                    }
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Resolves the SP Khullar Nadi coordinates for a house-signification lord.
+        ///
+        /// The four components are joined in the fixed order Posited -> SGN -> STL -> SUB:
+        ///   strPosited - the houses the lord is posited in.
+        ///   strSgn     - the signs (houses) owned by the lord.
+        ///   strStl     - the houses signified by the lord's star lord.
+        ///   strSub     - the houses signified by the lord's sub lord.
+        ///
+        /// The concatenation preserves the exact order supplied by each component and
+        /// keeps duplicate house numbers — a number coming from two different source
+        /// components (for example STL and SUB) intentionally appears twice. Empty
+        /// components are simply skipped. No de-duplication and no sorting is applied.
+        /// </summary>
+        public static string ResolveSPKhullarCoordinates(string strPosited, string strSgn, string strStl, string strSub)
+        {
+            string[] strComponents =
+            {
+                CombineHouseLists(strPosited),
+                CombineHouseLists(strSgn),
+                CombineHouseLists(strStl),
+                CombineHouseLists(strSub)
+            };
+
+            StringBuilder result = new StringBuilder();
+
+            for (int i = 0; i < strComponents.Length; i++)
+            {
+                if (string.IsNullOrEmpty(strComponents[i]))
+                {
+                    continue;
+                }
+
+                string[] strHouses = strComponents[i].Split(',');
+                for (int j = 0; j < strHouses.Length; j++)
+                {
+                    if (result.Length > 0)
+                    {
+                        result.Append(' ');
+                    }
+                    result.Append(strHouses[j]);
+                }
+            }
+
+            return result.ToString();
+        }
+
+        #endregion
+
         #region KP Table Validation
 
         /// <summary>

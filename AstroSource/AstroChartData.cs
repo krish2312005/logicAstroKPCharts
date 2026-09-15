@@ -32,8 +32,12 @@ namespace srlWebCom.Astro.AstroObjects
         public string Planet = "";
         public string SubLord = "";
         public string SubWise = "";
+        public string D1 = "";
+        public string D2 = "";
         public string D3 = "";
         public string D4 = "";
+        public string D5 = "";
+        public string D6 = "";
         public string D7 = "";
         public string D8 = "";
     }
