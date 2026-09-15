@@ -39,8 +39,14 @@
     <Compile Include="..\AstroSource\AstroObjects.cs">
       <Link>AstroSource\AstroObjects.cs</Link>
     </Compile>
+    <Compile Include="..\AstroSource\AstroChartData.cs">
+      <Link>AstroSource\AstroChartData.cs</Link>
+    </Compile>
     <Compile Include="..\AstroSource\NadiCalculationService.cs">
       <Link>AstroSource\NadiCalculationService.cs</Link>
+    </Compile>
+    <Compile Include="..\AstroSource\KhullarCalculationService.cs">
+      <Link>AstroSource\KhullarCalculationService.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -94,6 +94,9 @@
     <Compile Include="..\AstroSource\NadiCalculationService.cs">
       <Link>AstroSource\NadiCalculationService.cs</Link>
     </Compile>
+    <Compile Include="..\AstroSource\KhullarCalculationService.cs">
+      <Link>AstroSource\KhullarCalculationService.cs</Link>
+    </Compile>
     <Compile Include="..\AstroSource\AstroVMDasa.cs">
       <Link>AstroSource\AstroVMDasa.cs</Link>
     </Compile>

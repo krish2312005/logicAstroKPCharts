@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Text;
 using System.Windows.Forms;
 using srlWebCom.Astro.AstroObjects;
 
@@ -480,19 +481,13 @@ namespace logicAstroKPCharts
             }
 
             HouseSignificationData hsd;
-            if (m_nadiSignifications.TryGetValue(strLord.Trim(), out hsd))
+            if (!m_nadiSignifications.TryGetValue(strLord.Trim(), out hsd))
             {
-                // SP Khullar coordinates = Posited + SGN + STL + SUB.
-                //   Posited = D3  (the house(s) the lord is posited in)
-                //   SGN     = D4  (the sign(s) the lord owns)
-                //   STL     = D1 + D2 (houses of the lord's star lord; occupied + owned)
-                //   SUB     = D5 + D6 (houses of the lord's sub lord; occupied + owned)
-                string strStl = NadiCalculationService.CombineHouseLists(hsd.D1, hsd.D2);
-                string strSub = NadiCalculationService.CombineHouseLists(hsd.D5, hsd.D6);
-                return NadiCalculationService.ResolveSPKhullarCoordinates(hsd.D3, hsd.D4, strStl, strSub);
+                return "";
             }
 
-            return "";
+            return KhullarCalculationService.GetSPKhullarCoordinateStringWithMarkers(
+                strLord, hsd, m_chartData.PlanetList);
         }
 
         private void SetupSPKhullarTable()
@@ -519,6 +514,8 @@ namespace logicAstroKPCharts
                     m_nadiSignifications[planet] = hsd;
             }
 
+            PopulateCuspalLordshipFields();
+
             foreach (PlanetData pd in m_chartData.PlanetList)
             {
                 string displayName = pd.Name;
@@ -534,6 +531,51 @@ namespace logicAstroKPCharts
             }
 
             DisableSorting(dgvSPKhullar);
+        }
+
+        private void PopulateCuspalLordshipFields()
+        {
+            if (m_chartData == null || m_chartData.CuspList == null) return;
+
+            foreach (HouseSignificationData hsd in m_chartData.HouseSignificationList)
+            {
+                string planetName = (hsd.Planet ?? "").Replace("#", "").Replace("*", "").Trim();
+                if (planetName.Length == 0) continue;
+
+                StringBuilder signLordCusps = new StringBuilder();
+                StringBuilder starLordCusps = new StringBuilder();
+                StringBuilder subLordCusps = new StringBuilder();
+                StringBuilder sslordCusps = new StringBuilder();
+
+                foreach (CuspData cd in m_chartData.CuspList)
+                {
+                    if (string.Equals((cd.SignLord ?? "").Trim(), planetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (signLordCusps.Length > 0) signLordCusps.Append(',');
+                        signLordCusps.Append(cd.HouseNo);
+                    }
+                    if (string.Equals((cd.StarLord ?? "").Trim(), planetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (starLordCusps.Length > 0) starLordCusps.Append(',');
+                        starLordCusps.Append(cd.HouseNo);
+                    }
+                    if (string.Equals((cd.SubLord ?? "").Trim(), planetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (subLordCusps.Length > 0) subLordCusps.Append(',');
+                        subLordCusps.Append(cd.HouseNo);
+                    }
+                    if (string.Equals((cd.SSLord ?? "").Trim(), planetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (sslordCusps.Length > 0) sslordCusps.Append(',');
+                        sslordCusps.Append(cd.HouseNo);
+                    }
+                }
+
+                hsd.CuspalSignLord = signLordCusps.ToString();
+                hsd.CuspalStarLord = starLordCusps.ToString();
+                hsd.CuspalSubLord = subLordCusps.ToString();
+                hsd.CuspalSSLord = sslordCusps.ToString();
+            }
         }
 
         private void SetupPlanetLegend()

@@ -40,6 +40,11 @@ namespace srlWebCom.Astro.AstroObjects
         public string D6 = "";
         public string D7 = "";
         public string D8 = "";
+
+        public string CuspalSignLord = "";
+        public string CuspalStarLord = "";
+        public string CuspalSubLord = "";
+        public string CuspalSSLord = "";
     }
 
     public class DasaData

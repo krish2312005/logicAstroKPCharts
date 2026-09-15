@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using srlWebCom.Astro.AstroObjects;
 
 namespace NadiCalculationTests
@@ -48,10 +49,14 @@ namespace NadiCalculationTests
             Run("GetKPStarSubLords agrees with the model across all 12 signs", TestKPLookupVersusModel);
             Run("BuildNodeHouseSignifications has no stray commas", TestNodeSignifications);
             Run("Nadi coordinates resolve occupied/owned houses for all 27 cells", TestNadiResolution);
-            Run("SP Khullar coordinates match the reference chart data", TestSPKhullarResolution);
-            Run("SP Khullar concatenation order is Posited -> SGN -> STL -> SUB", TestSPKhullarOrder);
-            Run("SP Khullar handles empty components and multiple values", TestSPKhullarEmptyAndMultiple);
-            Run("SP Khullar preserves duplicate house numbers", TestSPKhullarDuplicates);
+            Run("Khullar: IsNode identifies RA and KE", TestKhullarIsNode);
+            Run("Khullar: PS detects own star", TestKhullarPSOwnStar);
+            Run("Khullar: PS detects mutual exchange", TestKhullarPSMutualExchange);
+            Run("Khullar: PS detects other planet in star", TestKhullarPSOtherInStar);
+            Run("Khullar: Stellar status resolves star lord houses", TestKhullarStellarStatus);
+            Run("Khullar: Combined PS+Stellar result", TestKhullarCombinedResult);
+            Run("Khullar: Node PS uses D3+D7+D8", TestKhullarNodePS);
+            Run("Khullar: Empty fields produce empty result", TestKhullarEmptyFields);
 
             Console.WriteLine();
             Console.WriteLine("=========================================================");
@@ -649,134 +654,244 @@ private static bool TestKeSubSubSegments()
             return true;
         }
 
-        private class SPKhullarLord
+        private static bool TestKhullarIsNode()
         {
-            public string Name;
-            public string Posited;
-            public string Sgn;
-            public string Stl;
-            public string Sub;
-            public string Expected;
+            if (!KhullarCalculationService.IsNode("RA"))
+            {
+                Fail("IsNode('RA') should be true");
+                return false;
+            }
+            if (!KhullarCalculationService.IsNode("KE"))
+            {
+                Fail("IsNode('KE') should be true");
+                return false;
+            }
+            if (!KhullarCalculationService.IsNode("ra"))
+            {
+                Fail("IsNode('ra') should be true (case insensitive)");
+                return false;
+            }
+            if (KhullarCalculationService.IsNode("SU"))
+            {
+                Fail("IsNode('SU') should be false");
+                return false;
+            }
+            if (KhullarCalculationService.IsNode(""))
+            {
+                Fail("IsNode('') should be false");
+                return false;
+            }
+            return true;
         }
 
-        private static bool TestSPKhullarResolution()
+        private static bool TestKhullarPSOwnStar()
         {
-            // Reference SP Khullar data. Components map onto the chart's existing
-            // per-lord house data; the expected sequence is the pure-house-number
-            // concatenation Posited -> SGN -> STL -> SUB.
-            SPKhullarLord[] lords = new SPKhullarLord[]
+            List<PlanetData> planets = new List<PlanetData>();
+            planets.Add(new PlanetData { Name = "SU", StarLord = "SU" });
+            planets.Add(new PlanetData { Name = "MO", StarLord = "VE" });
+            planets.Add(new PlanetData { Name = "MA", StarLord = "MA" });
+
+            if (!KhullarCalculationService.DeterminePositionalStatus("SU", "SU", planets))
             {
-                new SPKhullarLord { Name = "Sun#",    Posited = "1",                    Sgn = "9",     Stl = "",          Sub = "4",             Expected = "1 9 4" },
-                new SPKhullarLord { Name = "Moon*",   Posited = "7",                    Sgn = "8",     Stl = "2,6,10",    Sub = "3",             Expected = "7 8 2 6 10 3" },
-                new SPKhullarLord { Name = "Mars",    Posited = "12",                   Sgn = "5,12",  Stl = "",          Sub = "8",             Expected = "12 5 12 8" },
-                new SPKhullarLord { Name = "Saturn*", Posited = "7",                    Sgn = "2,3",   Stl = "8,12",      Sub = "1",             Expected = "7 2 3 8 12 1" },
-                new SPKhullarLord { Name = "Mercury", Posited = "1",                    Sgn = "7,10",  Stl = "4",         Sub = "",              Expected = "1 7 10 4" },
-                new SPKhullarLord { Name = "Ketu",    Posited = "10",                   Sgn = "",      Stl = "1",         Sub = "",              Expected = "10 1" },
-                new SPKhullarLord { Name = "Venus#",  Posited = "1",                    Sgn = "6,11",  Stl = "5,9",       Sub = "10",            Expected = "1 6 11 5 9 10" },
-                new SPKhullarLord { Name = "Jupiter", Posited = "10",                   Sgn = "1,4",   Stl = "11",        Sub = "5,6,7,11,12",   Expected = "10 1 4 11 5 6 7 11 12" },
-                new SPKhullarLord { Name = "Rahu",    Posited = "4",                    Sgn = "",      Stl = "3,7",       Sub = "2,9",           Expected = "4 3 7 2 9" }
+                Fail("SU in own star should have PS");
+                return false;
+            }
+            if (!KhullarCalculationService.DeterminePositionalStatus("MA", "MA", planets))
+            {
+                Fail("MA in own star should have PS");
+                return false;
+            }
+            if (KhullarCalculationService.DeterminePositionalStatus("MO", "VE", planets))
+            {
+                Fail("MO in VE star should not have PS (VE is in list)");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool TestKhullarPSMutualExchange()
+        {
+            List<PlanetData> planets = new List<PlanetData>();
+            planets.Add(new PlanetData { Name = "SU", StarLord = "MO" });
+            planets.Add(new PlanetData { Name = "MO", StarLord = "SU" });
+            planets.Add(new PlanetData { Name = "MA", StarLord = "VE" });
+
+            if (!KhullarCalculationService.DeterminePositionalStatus("SU", "MO", planets))
+            {
+                Fail("SU should have PS via mutual exchange with MO");
+                return false;
+            }
+            if (!KhullarCalculationService.DeterminePositionalStatus("MO", "SU", planets))
+            {
+                Fail("MO should have PS via mutual exchange with SU");
+                return false;
+            }
+            if (KhullarCalculationService.DeterminePositionalStatus("MA", "VE", planets))
+            {
+                Fail("MA should not have PS (no exchange)");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool TestKhullarPSOtherInStar()
+        {
+            List<PlanetData> planets = new List<PlanetData>();
+            planets.Add(new PlanetData { Name = "SU", StarLord = "KE" });
+            planets.Add(new PlanetData { Name = "MO", StarLord = "KE" });
+            planets.Add(new PlanetData { Name = "MA", StarLord = "VE" });
+
+            if (KhullarCalculationService.DeterminePositionalStatus("SU", "KE", planets))
+            {
+                Fail("SU should not have PS (MO is in KE star)");
+                return false;
+            }
+            if (KhullarCalculationService.DeterminePositionalStatus("MO", "KE", planets))
+            {
+                Fail("MO should not have PS (SU is in KE star)");
+                return false;
+            }
+            if (!KhullarCalculationService.DeterminePositionalStatus("MA", "VE", planets))
+            {
+                Fail("MA should have PS (no planet in VE star)");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool TestKhullarStellarStatus()
+        {
+            Dictionary<string, HouseSignificationData> lookup = new Dictionary<string, HouseSignificationData>(StringComparer.OrdinalIgnoreCase);
+            lookup["SU"] = new HouseSignificationData { D1 = "4", D2 = "1,9" };
+            lookup["MO"] = new HouseSignificationData { D1 = "7", D2 = "2,8" };
+
+            string result = KhullarCalculationService.ResolveStarLordHouses("SU", lookup);
+            if (result != "1,4,9")
+            {
+                Fail(string.Format("Stellar SU houses expected '1,4,9', got '{0}'", result));
+                return false;
+            }
+
+            result = KhullarCalculationService.ResolveStarLordHouses("MO", lookup);
+            if (result != "2,7,8")
+            {
+                Fail(string.Format("Stellar MO houses expected '2,7,8', got '{0}'", result));
+                return false;
+            }
+
+            result = KhullarCalculationService.ResolveStarLordHouses("VE", lookup);
+            if (result != "")
+            {
+                Fail(string.Format("Stellar VE houses expected '', got '{0}'", result));
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TestKhullarCombinedResult()
+        {
+            Dictionary<string, HouseSignificationData> lookup = new Dictionary<string, HouseSignificationData>(StringComparer.OrdinalIgnoreCase);
+            lookup["SU"] = new HouseSignificationData
+            {
+                D1 = "4", D2 = "1,9", D3 = "3", D4 = "5,9",
+                D5 = "7", D6 = "2,8", D7 = "6", D8 = "10,11"
+            };
+            lookup["KE"] = new HouseSignificationData
+            {
+                D1 = "2", D2 = "6,8", D3 = "5", D4 = "",
+                D5 = "3", D6 = "1,12", D7 = "4", D8 = "7,10"
             };
 
-            for (int i = 0; i < lords.Length; i++)
-            {
-                SPKhullarLord lord = lords[i];
-                string actual = NadiCalculationService.ResolveSPKhullarCoordinates(
-                    lord.Posited, lord.Sgn, lord.Stl, lord.Sub);
+            List<PlanetData> planets = new List<PlanetData>();
+            planets.Add(new PlanetData { Name = "SU", StarLord = "KE", SubLord = "MO" });
+            planets.Add(new PlanetData { Name = "KE", StarLord = "SA", SubLord = "VE" });
 
-                if (!string.Equals(actual, lord.Expected, StringComparison.Ordinal))
-                {
-                    Fail(string.Format("SP Khullar {0}: resolved '{1}', expected '{2}'", lord.Name, actual, lord.Expected));
-                    return false;
-                }
+            SPKhullarCoordinate coord = KhullarCalculationService.ResolvePlanetCoordinate(
+                planets[0], lookup["SU"], planets, lookup);
+
+            if (coord.PlanetName != "SU")
+            {
+                Fail(string.Format("Planet name expected 'SU', got '{0}'", coord.PlanetName));
+                return false;
             }
-
-            return true;
-        }
-
-        private static bool TestSPKhullarOrder()
-        {
-            // Posited must come first, then SGN, then STL, then SUB. A sorting or
-            // de-duplicating resolver would reorder/merge these values and break the
-            // expected concatenation.
-            string actual = NadiCalculationService.ResolveSPKhullarCoordinates("7", "8", "2,6,10", "3");
-            if (actual != "7 8 2 6 10 3")
+            if (!coord.HasPositionalStatus)
             {
-                Fail(string.Format("Ordered concatenation failed: '{0}'", actual));
+                Fail("SU should have PS (no planet in KE star)");
                 return false;
             }
 
-            actual = NadiCalculationService.ResolveSPKhullarCoordinates("12", "5,12", "", "8");
-            if (actual != "12 5 12 8")
+            string expectedPlanetResult = "1,3,4,5,9";
+            if (coord.PlanetResult != expectedPlanetResult)
             {
-                Fail(string.Format("Repeated value across components failed: '{0}'", actual));
+                Fail(string.Format("SU planet result expected '{0}', got '{1}'", expectedPlanetResult, coord.PlanetResult));
                 return false;
             }
 
             return true;
         }
 
-        private static bool TestSPKhullarEmptyAndMultiple()
+        private static bool TestKhullarNodePS()
         {
-            // All four components empty -> empty result.
-            if (NadiCalculationService.ResolveSPKhullarCoordinates("", "", "", "") != "")
+            Dictionary<string, HouseSignificationData> lookup = new Dictionary<string, HouseSignificationData>(StringComparer.OrdinalIgnoreCase);
+            lookup["RA"] = new HouseSignificationData
             {
-                Fail("All-empty components should produce an empty result");
+                D1 = "3", D2 = "5,11", D3 = "4", D4 = "",
+                D5 = "8", D6 = "2,9", D7 = "6", D8 = "2,3",
+                CuspalSignLord = "1,7", CuspalStarLord = "4,10",
+                CuspalSubLord = "8", CuspalSSLord = "5"
+            };
+
+            List<PlanetData> planets = new List<PlanetData>();
+            planets.Add(new PlanetData { Name = "RA", StarLord = "JU", SubLord = "SA" });
+
+            SPKhullarCoordinate coord = KhullarCalculationService.ResolveNodeAsPlanetCoordinate(
+                "RA", lookup["RA"], planets, lookup);
+
+            if (coord.PlanetName != "RA")
+            {
+                Fail(string.Format("Node name expected 'RA', got '{0}'", coord.PlanetName));
                 return false;
             }
 
-            // Empty leading, middle and trailing components are skipped.
-            if (NadiCalculationService.ResolveSPKhullarCoordinates("10", "", "1", "") != "10 1")
-            {
-                Fail("Empty SGN/SUB should be skipped, expected '10 1'");
-                return false;
-            }
+            SortedSet<int> expected = new SortedSet<int>();
+            expected.Add(1);
+            expected.Add(2);
+            expected.Add(3);
+            expected.Add(4);
+            expected.Add(5);
+            expected.Add(6);
+            expected.Add(7);
+            expected.Add(8);
+            expected.Add(10);
 
-            // Only the middle components populated, in order.
-            if (NadiCalculationService.ResolveSPKhullarCoordinates("", "2,3", "8,12", "1") != "2 3 8 12 1")
+            string expectedStr = "1,2,3,4,5,6,7,8,10";
+            if (coord.PlanetResult != expectedStr)
             {
-                Fail("Middle components should concatenate in order, expected '2 3 8 12 1'");
-                return false;
-            }
-
-            // Multiple values in every component.
-            string actual = NadiCalculationService.ResolveSPKhullarCoordinates("1", "6,11", "5,9", "10");
-            if (actual != "1 6 11 5 9 10")
-            {
-                Fail(string.Format("Multiple-value components failed: '{0}'", actual));
+                Fail(string.Format("RA planet result expected '{0}', got '{1}'", expectedStr, coord.PlanetResult));
                 return false;
             }
 
             return true;
         }
 
-        private static bool TestSPKhullarDuplicates()
+        private static bool TestKhullarEmptyFields()
         {
-            // Jupiter-like layout: 11 appears in STL and again in SUB. The two 11s
-            // come from different source components and must both stay.
-            string actual = NadiCalculationService.ResolveSPKhullarCoordinates("10", "1,4", "11", "5,6,7,11,12");
-            if (actual != "10 1 4 11 5 6 7 11 12")
+            SPKhullarCoordinate coord = KhullarCalculationService.ResolvePlanetCoordinate(
+                null, null, new List<PlanetData>(),
+                new Dictionary<string, HouseSignificationData>(StringComparer.OrdinalIgnoreCase));
+
+            string result = KhullarCalculationService.ResolveKhullarCoordinateString(coord);
+            if (result != " |  | ")
             {
-                Fail(string.Format("Duplicates were not preserved: '{0}'", actual));
+                Fail(string.Format("Empty coord expected ' |  | ', got '{0}'", result));
                 return false;
             }
 
-            // A duplicate within a single component must also be preserved verbatim.
-            string nested = NadiCalculationService.ResolveSPKhullarCoordinates("3", "3", "", "");
-            if (nested != "3 3")
+            string formatResult = KhullarCalculationService.FormatCoordinates(null, null, null);
+            if (formatResult != " |  | ")
             {
-                Fail(string.Format("Within-component duplicate was not preserved: '{0}'", nested));
-                return false;
-            }
-
-            // Rahu/Ketu node style rows (empty SGN).
-            if (NadiCalculationService.ResolveSPKhullarCoordinates("4", "", "3,7", "2,9") != "4 3 7 2 9")
-            {
-                Fail("Rahu reference sequence failed");
-                return false;
-            }
-            if (NadiCalculationService.ResolveSPKhullarCoordinates("10", "", "1", "") != "10 1")
-            {
-                Fail("Ketu reference sequence failed");
+                Fail(string.Format("FormatCoordinates null expected ' |  | ', got '{0}'", formatResult));
                 return false;
             }
 
